@@ -32,6 +32,11 @@ typedef long swift_once_t;
 // On Cygwin, std::once_flag can not be used because it is larger than the
 // platform word.
 typedef uintptr_t swift_once_t;
+
+#elif defined(_BARE)
+
+typedef bool swift_once_t;
+
 #else
 
 // On other platforms swift_once_t is std::once_flag

@@ -16,6 +16,7 @@ set(swift_stubs_objc_sources
     SwiftNativeNSXXXBaseARC.m
     SwiftNativeNSXXXBase.mm.gyb)
 set(swift_stubs_unicode_normalization_sources
+    UnicodeNormalization-Bare.cpp
     UnicodeNormalization.cpp)
 set(LLVM_OPTIONAL_SOURCES
     ${swift_stubs_objc_sources}
@@ -37,9 +38,9 @@ add_swift_target_library(swiftStdlibStubs
                   INSTALL_IN_COMPONENT
                     stdlib)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  set_property(SOURCE
-                 SwiftNativeNSXXXBaseARC.m
-               APPEND_STRING PROPERTY COMPILE_FLAGS
-                 "-fobjc-arc")
-endif()
+                #if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+                #  set_property(SOURCE
+                #                 SwiftNativeNSXXXBaseARC.m
+                #               APPEND_STRING PROPERTY COMPILE_FLAGS
+                #                 "-fobjc-arc")
+                #endif()
