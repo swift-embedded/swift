@@ -41,7 +41,7 @@
 #define NOMINMAX
 #include <windows.h>
 #else
-#include <sys/mman.h>
+//#include <sys/mman.h>
 #include <unistd.h>
 #include <dlfcn.h>
 #endif
