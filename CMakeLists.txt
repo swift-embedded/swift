@@ -721,13 +721,6 @@ elseif("${SWIFT_HOST_VARIANT_SDK}" MATCHES "(OSX|IOS*|TVOS*|WATCHOS*)")
 
 endif()
 
-if("${SWIFT_PRIMARY_VARIANT_SDK}" STREQUAL "")
-  set(SWIFT_PRIMARY_VARIANT_SDK "${SWIFT_PRIMARY_VARIANT_SDK_default}")
-endif()
-if("${SWIFT_PRIMARY_VARIANT_ARCH}" STREQUAL "")
-  set(SWIFT_PRIMARY_VARIANT_ARCH "${SWIFT_PRIMARY_VARIANT_ARCH_default}")
-endif()
-
 # Should we cross-compile the standard library for Android?
 is_sdk_requested(ANDROID swift_build_android)
 if(swift_build_android AND NOT "${SWIFT_ANDROID_NDK_PATH}" STREQUAL "")
@@ -750,6 +743,19 @@ if(swift_build_windows AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   configure_sdk_windows("Windows" "msvc" "${SWIFT_SDK_WINDOWS_ARCHITECTURES}")
 endif()
 
+is_sdk_requested(BARE swift_build_bare)
+if(swift_build_bare)
+  configure_sdk_bare(BARE "Bare" "none" "none" "armv7m" "arm-none-eabi" "/usr/local/Cellar/gcc-arm-none-eabi-63/20170628/arm-none-eabi")
+  set(SWIFT_PRIMARY_VARIANT_SDK_default "BARE")
+  set(SWIFT_PRIMARY_VARIANT_ARCH_default "armv7m")
+endif()
+
+if("${SWIFT_PRIMARY_VARIANT_SDK}" STREQUAL "")
+  set(SWIFT_PRIMARY_VARIANT_SDK "${SWIFT_PRIMARY_VARIANT_SDK_default}")
+endif()
+if("${SWIFT_PRIMARY_VARIANT_ARCH}" STREQUAL "")
+  set(SWIFT_PRIMARY_VARIANT_ARCH "${SWIFT_PRIMARY_VARIANT_ARCH_default}")
+endif()
 if("${SWIFT_SDKS}" STREQUAL "")
   set(SWIFT_SDKS "${SWIFT_CONFIGURED_SDKS}")
 endif()

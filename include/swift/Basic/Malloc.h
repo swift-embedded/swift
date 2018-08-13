@@ -21,6 +21,8 @@
 #include <cassert>
 #if defined(_WIN32)
 #include <malloc.h>
+#elif defined(_BARE)
+#include <stdlib.h>
 #else
 #include <cstdlib>
 #endif
@@ -38,6 +40,9 @@ inline void *AlignedAlloc(size_t size, size_t align) {
 #if defined(_WIN32)
   r = _aligned_malloc(size, align);
   assert(r && "_aligned_malloc failed");
+#elif defined(_BARE)
+  r = aligned_alloc(align, size);
+  assert(r && "aligned_malloc failed");
 #else
   int res = posix_memalign(&r, align, size);
   assert(res == 0 && "posix_memalign failed");

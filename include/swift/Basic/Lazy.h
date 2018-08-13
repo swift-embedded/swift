@@ -36,6 +36,10 @@ namespace swift {
   using OnceToken_t = unsigned long;
 # define SWIFT_ONCE_F(TOKEN, FUNC, CONTEXT) \
   _swift_once_f(&TOKEN, CONTEXT, FUNC)
+#elif defined(_BARE)
+  using OnceToken_t = bool;
+# define SWIFT_ONCE_F(TOKEN, FUNC, CONTEXT) \
+  do{if(!TOKEN){TOKEN=true; FUNC(CONTEXT);}}while(0)
 #else
   using OnceToken_t = std::once_flag;
 # define SWIFT_ONCE_F(TOKEN, FUNC, CONTEXT) \

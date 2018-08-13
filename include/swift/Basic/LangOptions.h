@@ -317,7 +317,7 @@ namespace swift {
       } else if (Target.isOSLinux() || Target.isOSFreeBSD() ||
                  Target.isAndroid() || Target.isOSWindows() ||
                  Target.isPS4() || Target.isOSHaiku() ||
-                 Target.getTriple().empty()) {
+                 Target.getTriple().empty() || Target.isOSUnknown()) {
         major = minor = revision = 0;
       } else {
         llvm_unreachable("Unsupported target OS");

@@ -149,6 +149,7 @@ KNOWN_SETTINGS=(
     skip-test-linux             ""               "set to skip testing Swift stdlibs for Linux"
     skip-test-freebsd           ""               "set to skip testing Swift stdlibs for FreeBSD"
     skip-test-cygwin            ""               "set to skip testing Swift stdlibs for Cygwin"
+    skip-test-bare              ""               "set to skip testing Swift stdlibs for Bare Metal"
     skip-test-haiku             ""               "set to skip testing Swift stdlibs for Haiku"
     skip-test-osx               ""               "set to skip testing Swift stdlibs for OS X"
     skip-test-ios-32bit-simulator     ""         "set to skip testing Swift stdlibs for iOS 32bit simulators"
@@ -434,6 +435,13 @@ function set_build_options_for_host() {
             SWIFT_HOST_VARIANT="haiku"
             SWIFT_HOST_VARIANT_SDK="HAIKU"
             SWIFT_HOST_VARIANT_ARCH="x86_64"
+            ;;
+        none-*)
+            SWIFT_HOST_VARIANT="none"
+            SWIFT_HOST_VARIANT_SDK="BARE"
+            SWIFT_HOST_VARIANT_ARCH="armv7m"
+            SWIFT_HOST_TRIPLE="arm-none-eabi"
+            llvm_target_arch="ARM"
             ;;
         linux-*)
             SWIFT_HOST_VARIANT="linux"
@@ -1024,7 +1032,7 @@ function make_relative_symlink() {
 CROSS_COMPILE_HOSTS=($CROSS_COMPILE_HOSTS)
 for t in "${CROSS_COMPILE_HOSTS[@]}"; do
     case ${t} in
-        iphone* | appletv* | watch* | linux-armv6 | linux-armv7 )
+        iphone* | appletv* | watch* | linux-armv6 | linux-armv7 | none-* )
             ;;
         *)
             echo "Unknown host to cross-compile for: ${t}"
@@ -1315,6 +1323,11 @@ function calculate_targets_for_host() {
                 swift_sdk="LINUX"
                 build_for_this_target=$(not ${SKIP_BUILD_LINUX})
                 test_this_target=$(not ${SKIP_TEST_LINUX})
+                ;;
+            none-armv7m)
+                swift_sdk="BARE"
+                build_for_this_target=$(not ${SKIP_BUILD_NONE_ARMV7M})
+                test_this_target=$(not ${SKIP_TEST_BARE})
                 ;;
             freebsd-*)
                 swift_sdk="FREEBSD"

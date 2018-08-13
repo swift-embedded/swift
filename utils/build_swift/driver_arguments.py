@@ -759,6 +759,8 @@ def create_argument_parser():
            help='skip testing Swift stdlibs for FreeBSD')
     option('--skip-test-cygwin', toggle_false('test_cygwin'),
            help='skip testing Swift stdlibs for Cygwin')
+    option('--skip-test-bare', toggle_false('test_bare'),
+           help='skip testing Swift stdlibs for Bare Metal')
 
     # -------------------------------------------------------------------------
     in_group('Run build')
