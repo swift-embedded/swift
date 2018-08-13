@@ -120,6 +120,10 @@ class StdlibDeploymentTarget(object):
         "powerpc64le",
         "s390x"])
 
+    BareMetal = Platform("none",
+                         archs=["armv7m", "armv6m"],
+                         sdk_name="BARE")
+
     FreeBSD = Platform("freebsd", archs=["x86_64"])
 
     Cygwin = Platform("cygwin", archs=["x86_64"])
@@ -141,7 +145,8 @@ class StdlibDeploymentTarget(object):
         Cygwin,
         Android,
         Windows,
-        Haiku]
+        Haiku,
+        BareMetal]
 
     # Cache of targets by name.
     _targets_by_name = dict((target.name, target)

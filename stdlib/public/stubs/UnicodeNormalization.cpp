@@ -16,6 +16,8 @@
 
 #include "../SwiftShims/UnicodeShims.h"
 
+#ifndef _BARE
+
 #include <stdint.h>
 
 #if defined(__APPLE__)
@@ -310,3 +312,5 @@ double swift::__swift_stdlib_u_getNumericValue(__swift_stdlib_UChar32 c) {
 asm(".linker_option \"-licucore\"\n");
 #endif // defined(__MACH__)
 
+
+#endif // defined(_BARE)

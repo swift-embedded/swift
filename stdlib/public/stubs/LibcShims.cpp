@@ -23,6 +23,8 @@
 #pragma comment(lib, "Bcrypt.lib")
 #else
 #include <pthread.h>
+
+#ifndef _BARE
 #include <semaphore.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -32,6 +34,9 @@
 #include <cmath>
 #include <errno.h>
 #include <fcntl.h>
+#endif
+
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -149,13 +154,15 @@ int swift::_stdlib_openat(int fd, const char *path, int oflag,
 
 SWIFT_RUNTIME_STDLIB_INTERNAL
 void *swift::_stdlib_sem_open2(const char *name, int oflag) {
-  return sem_open(name, oflag);
+  assert(false && "semaphore not supported");
+  //return sem_open(name, oflag);
 }
 
 SWIFT_RUNTIME_STDLIB_INTERNAL
 void *swift::_stdlib_sem_open4(const char *name, int oflag,
                                __swift_mode_t mode, unsigned int value) {
-  return sem_open(name, oflag, mode, value);
+  assert(false && "semaphore not supported");
+  //return sem_open(name, oflag, mode, value);
 }
 
 SWIFT_RUNTIME_STDLIB_INTERNAL
@@ -170,12 +177,14 @@ int swift::_stdlib_fcntlPtr(int fd, int cmd, void* ptr) {
 
 SWIFT_RUNTIME_STDLIB_INTERNAL
 int swift::_stdlib_ioctl(int fd, unsigned long int request, int value) {
-  return ioctl(fd, request, value);
+  assert(false && "ioctl not supported");
+  //return ioctl(fd, request, value);
 }
 
 SWIFT_RUNTIME_STDLIB_INTERNAL
 int swift::_stdlib_ioctlPtr(int fd, unsigned long int request, void* ptr) {
-  return ioctl(fd, request, ptr);
+  assert(false && "ioctl not supported");
+  //return ioctl(fd, request, ptr);
 }
 
 #if defined(__FreeBSD__)
@@ -273,7 +282,7 @@ SWIFT_RUNTIME_STDLIB_API
 size_t swift::_stdlib_malloc_size(const void *ptr) {
   return malloc_size(ptr);
 }
-#elif defined(__GNU_LIBRARY__) || defined(__CYGWIN__) || defined(__ANDROID__) || defined(__HAIKU__)
+#elif defined(__GNU_LIBRARY__) || defined(__CYGWIN__) || defined(__ANDROID__) || defined(__HAIKU__) || defined(_BARE)
 #if defined(__HAIKU__)
 #define _GNU_SOURCE
 #endif
@@ -346,6 +355,7 @@ void swift::_stdlib_random(void *buf, __swift_size_t nbytes) {
 
 SWIFT_RUNTIME_STDLIB_INTERNAL
 void swift::_stdlib_random(void *buf, __swift_size_t nbytes) {
+#if !defined(_BARE)
   while (nbytes > 0) {
     __swift_ssize_t actual_nbytes = -1;
 #if defined(GETRANDOM_AVAILABLE)
@@ -376,6 +386,7 @@ void swift::_stdlib_random(void *buf, __swift_size_t nbytes) {
     buf = static_cast<uint8_t *>(buf) + actual_nbytes;
     nbytes -= actual_nbytes;
   }
+#endif // defined(_BARE)
 }
 
 #endif

@@ -43,6 +43,8 @@ typedef long long int __swift_ssize_t;
 #else
 #error unsupported machine type
 #endif
+#elif defined(_BARE)
+typedef           int __swift_ssize_t;
 #else
 typedef      long int __swift_ssize_t;
 #endif
@@ -59,6 +61,8 @@ typedef __swift_uint32_t __swift_mode_t;
 typedef __swift_uint16_t __swift_mode_t;
 #elif defined(_WIN32)
 typedef __swift_int32_t __swift_mode_t;
+#elif defined(_BARE)
+typedef __swift_uint32_t __swift_mode_t;
 #else  // just guessing
 typedef __swift_uint16_t __swift_mode_t;
 #endif
@@ -203,6 +207,8 @@ typedef int __swift_thread_key_t;
 typedef unsigned long __swift_thread_key_t;
 #elif defined(__HAIKU__)
 typedef int __swift_thread_key_t;
+#elif defined(_BARE)
+typedef unsigned int __swift_thread_key_t;
 #else
 typedef unsigned long __swift_thread_key_t;
 #endif

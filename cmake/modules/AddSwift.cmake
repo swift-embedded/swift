@@ -138,6 +138,9 @@ function(_add_variant_c_compile_link_flags)
       "-B" "${SWIFT_SDK_ANDROID_ARCH_${CFLAGS_ARCH}_NDK_PREBUILT_PATH}/${SWIFT_SDK_ANDROID_ARCH_${CFLAGS_ARCH}_NDK_TRIPLE}/bin/")
   endif()
 
+  if("${CFLAGS_SDK}" STREQUAL "BARE")
+  endif()
+
   if(IS_DARWIN)
     list(APPEND result
       "-arch" "${CFLAGS_ARCH}"
@@ -295,6 +298,20 @@ function(_add_variant_c_compile_flags)
     list(APPEND result "-D__ANDROID_API__=${SWIFT_ANDROID_API_LEVEL}")
   endif()
 
+  if("${CFLAGS_SDK}" STREQUAL "BARE")
+    list(APPEND result "-D_BARE")
+    list(APPEND result "-D_GNU_SOURCE")
+    list(APPEND result "-D_POSIX_THREADS")
+    list(APPEND result "-D_POSIX_READER_WRITER_LOCKS")
+    list(APPEND result "-D_UNIX98_THREAD_MUTEX_ATTRIBUTES")
+    list(APPEND result "-I/Users/alandragomirecky/Copy/CVUT/masters_thesis/stdlib_add")
+    list(APPEND result "-I/usr/local/Cellar/gcc-arm-none-eabi-63/20170628/arm-none-eabi/include/c++/6.3.1/arm-none-eabi")
+    list(APPEND result "-I/usr/local/Cellar/gcc-arm-none-eabi-63/20170628/arm-none-eabi/include/c++/6.3.1")
+    list(APPEND result "-I/usr/local/Cellar/gcc-arm-none-eabi-63/20170628/arm-none-eabi/include")
+    list(APPEND result "-I/usr/local/Cellar/gcc-arm-none-eabi-63/20170628/lib/gcc/arm-none-eabi/6.3.1/include-fixed")
+    list(APPEND result "-isysroot" "/usr/local/Cellar/gcc-arm-none-eabi-63/20170628/arm-none-eabi")
+  endif()
+
   set("${CFLAGS_RESULT_VAR_NAME}" "${result}" PARENT_SCOPE)
 endfunction()
 
@@ -324,6 +341,11 @@ function(_add_variant_swift_compile_flags
       list(APPEND result "\"${CMAKE_INCLUDE_FLAG_C}${path}\"")
     endforeach()
   endif()
+
+  if("${sdk}" STREQUAL "BARE")
+    list(APPEND result "-Xcc" "-D_BARE")
+  endif()
+
 
   if(NOT BUILD_STANDALONE)
     list(APPEND result "-resource-dir" "${SWIFTLIB_DIR}")
@@ -415,6 +437,10 @@ function(_add_variant_link_flags)
     foreach(path IN LISTS ${LFLAGS_ARCH}_LIB)
       list(APPEND library_search_directories ${path}) 
     endforeach()
+  elseif("${LFLAGS_SDK}" STREQUAL "BARE")
+      list(APPEND result "-nostdlib" "-Wl,--start-group" "-lc" "-lgcc" "-lsupc++" "-lstdc++" "-lnosys" "-Wl,--end-group")
+      list(APPEND library_search_directories "/usr/local/Cellar/gcc-arm-none-eabi-63/20170628/arm-none-eabi/lib")
+      list(APPEND library_search_directories "/usr/local/Cellar/gcc-arm-none-eabi-63/20170628/lib/gcc/arm-none-eabi/6.3.1")
   else()
     # If lto is enabled, we need to add the object path flag so that the LTO code
     # generator leaves the intermediate object file in a place where it will not
@@ -1015,7 +1041,7 @@ function(_add_swift_library_single target name)
       INSTALL_RPATH "$ORIGIN:/usr/lib/swift/cygwin")
   endif()
 
-  set_target_properties("${target}" PROPERTIES BUILD_WITH_INSTALL_RPATH YES)
+  set_target_properties("${target}" PROPERTIES BUILD_WITH_INSTALL_RPATH FALSE)
   set_target_properties("${target}" PROPERTIES FOLDER "Swift libraries")
 
   # Configure the static library target.
