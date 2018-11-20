@@ -773,7 +773,7 @@ endif()
 
 is_sdk_requested(BARE swift_build_bare)
 if(swift_build_bare)
-  configure_sdk_bare(BARE "Bare" "none" "none" "armv7m" "arm-none-eabi" "/usr/local/Cellar/gcc-arm-none-eabi-63/20170628/arm-none-eabi")
+  configure_sdk_bare(BARE "Bare" "bare" "none" "armv7m" "armv7m-none-eabi" "/usr/local/Cellar/gcc-arm-none-eabi-63/20170628/arm-none-eabi")
   set(SWIFT_PRIMARY_VARIANT_SDK_default "BARE")
   set(SWIFT_PRIMARY_VARIANT_ARCH_default "armv7m")
 endif()

@@ -35,7 +35,7 @@
 ///
 /// The minimum possible value for this macro is 1; we always assume
 /// that the null representation is available.
-#define SWIFT_ABI_DEFAULT_LEAST_VALID_POINTER 4096
+#define SWIFT_ABI_DEFAULT_LEAST_VALID_POINTER 1
 
 /// The bitmask of spare bits in a function pointer.
 #define SWIFT_ABI_DEFAULT_FUNCTION_SPARE_BITS_MASK 0
@@ -81,7 +81,7 @@
 /*********************************** arm **************************************/
 
 // Heap objects are pointer-aligned, so the low two bits are unused.
-#define SWIFT_ABI_ARM_SWIFT_SPARE_BITS_MASK 0x00000003U
+#define SWIFT_ABI_ARM_SWIFT_SPARE_BITS_MASK 0x00000000
 
 // ObjC weak reference discriminator is the LSB.
 #define SWIFT_ABI_ARM_OBJC_WEAK_REFERENCE_MARKER_MASK  \

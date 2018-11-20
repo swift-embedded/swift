@@ -39,6 +39,9 @@
 // clang without thread_local support - use pthreads
 # define SWIFT_EXCLUSIVITY_USE_THREADLOCAL 0
 # define SWIFT_EXCLUSIVITY_USE_PTHREAD_SPECIFIC 1
+#elif defined(_BARE)
+# define SWIFT_EXCLUSIVITY_USE_THREADLOCAL 0
+# define SWIFT_EXCLUSIVITY_USE_PTHREAD_SPECIFIC 1
 #else
 // Use thread_local
 # define SWIFT_EXCLUSIVITY_USE_THREADLOCAL 1

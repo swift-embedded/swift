@@ -238,8 +238,8 @@ macro(configure_sdk_bare
 
   foreach(arch ${architectures})
     set(SWIFT_SDK_${prefix}_ARCH_${arch}_PATH "${sdkpath}")
-    set(SWIFT_SDK_${prefix}_ARCH_${arch}_TRIPLE "arm-none-eabi")
-    set(SWIFT_SDK_${prefix}_ARCH_${arch}_PATH "/")
+    set(SWIFT_SDK_${prefix}_ARCH_${arch}_TRIPLE "armv7m-none-eabi")
+    set(SWIFT_SDK_${prefix}_ARCH_${arch}_LINKER "${sdkpath}/bin/ld")
   endforeach()
 
   # Add this to the list of known SDKs.

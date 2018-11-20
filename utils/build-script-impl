@@ -427,7 +427,7 @@ function set_build_options_for_host() {
             SWIFT_HOST_VARIANT="none"
             SWIFT_HOST_VARIANT_SDK="BARE"
             SWIFT_HOST_VARIANT_ARCH="armv7m"
-            SWIFT_HOST_TRIPLE="arm-none-eabi"
+            SWIFT_HOST_TRIPLE="armv7m-none-eabi"
             llvm_target_arch="ARM"
             ;;
         linux-*)
@@ -1285,7 +1285,7 @@ function calculate_targets_for_host() {
                 build_for_this_target=$(not ${SKIP_BUILD_LINUX})
                 test_this_target=$(not ${SKIP_TEST_LINUX})
                 ;;
-            none-armv7m)
+            bare-armv7m)
                 swift_sdk="BARE"
                 build_for_this_target=$(not ${SKIP_BUILD_NONE_ARMV7M})
                 test_this_target=$(not ${SKIP_TEST_BARE})
