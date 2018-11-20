@@ -13,7 +13,7 @@ set(swift_stubs_objc_sources
     FoundationHelpers.mm
     OptionalBridgingHelper.mm
     Reflection.mm
-    SwiftNativeNSXXXBaseARC.m
+    SwiftNativeNSXXXBaseARC.mm
     SwiftNativeNSXXXBase.mm.gyb)
 set(swift_stubs_unicode_normalization_sources
     UnicodeNormalization-Bare.cpp
