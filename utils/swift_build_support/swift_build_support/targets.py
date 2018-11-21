@@ -121,7 +121,7 @@ class StdlibDeploymentTarget(object):
         "powerpc64le",
         "s390x"])
 
-    BareMetal = Platform("none",
+    BareMetal = Platform("bare",
                          archs=["armv7m", "armv6m"],
                          sdk_name="BARE")
 

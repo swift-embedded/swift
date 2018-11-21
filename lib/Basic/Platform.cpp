@@ -118,7 +118,6 @@ static StringRef getPlatformNameForDarwin(const DarwinPlatformKind platform) {
 
 StringRef swift::getPlatformNameForTriple(const llvm::Triple &triple) {
   switch (triple.getOS()) {
-  case llvm::Triple::UnknownOS:
   case llvm::Triple::Ananas:
   case llvm::Triple::CloudABI:
   case llvm::Triple::DragonFly:
@@ -149,6 +148,8 @@ StringRef swift::getPlatformNameForTriple(const llvm::Triple &triple) {
   case llvm::Triple::TvOS:
   case llvm::Triple::WatchOS:
     return getPlatformNameForDarwin(getDarwinPlatformKind(triple));
+  case llvm::Triple::UnknownOS:
+    return "bare";
   case llvm::Triple::Linux:
     return triple.isAndroid() ? "android" : "linux";
   case llvm::Triple::FreeBSD:
