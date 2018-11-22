@@ -43,7 +43,11 @@
 #else
 //#include <sys/mman.h>
 #include <unistd.h>
+
+#if SWIFT_OBJC_INTEROP
 #include <dlfcn.h>
+#endif /* SWIFT_OBJC_INTEROP */
+
 #endif
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/Hashing.h"

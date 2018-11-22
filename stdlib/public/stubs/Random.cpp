@@ -74,6 +74,7 @@ void swift::swift_stdlib_random(void *buf, __swift_size_t nbytes) {
 
 SWIFT_RUNTIME_STDLIB_API
 void swift::swift_stdlib_random(void *buf, __swift_size_t nbytes) {
+#if !defined(_BARE)
   while (nbytes > 0) {
     __swift_ssize_t actual_nbytes = -1;
 
@@ -111,6 +112,9 @@ void swift::swift_stdlib_random(void *buf, __swift_size_t nbytes) {
     buf = static_cast<uint8_t *>(buf) + actual_nbytes;
     nbytes -= actual_nbytes;
   }
+#else /* !defined(_BARE) */
+  // TODO
+#endif /* !defined(_BARE) */
 }
 
 #endif
