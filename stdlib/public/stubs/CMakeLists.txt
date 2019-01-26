@@ -16,7 +16,7 @@ set(swift_stubs_objc_sources
     SwiftNativeNSXXXBaseARC.mm
     SwiftNativeNSXXXBase.mm.gyb)
 set(swift_stubs_unicode_normalization_sources
-    UnicodeNormalization-Bare.cpp
+    UnicodeNormalization-BareMetal.cpp
     UnicodeNormalization.cpp)
 set(LLVM_OPTIONAL_SOURCES
     ${swift_stubs_objc_sources}

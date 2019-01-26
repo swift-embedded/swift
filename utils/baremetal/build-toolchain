@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -e
+
+LOCAL_DIR="$(cd "$(dirname "$0")" && pwd)"
+SWIFT_PATH="$( cd "$(dirname "$0")/../../.." && pwd )"
+
+# Build gcc-arm-none-eabi
+"$LOCAL_DIR"/build-gcc-arm-none-eabi
+
+# Build qemu
+"$LOCAL_DIR"/build-qemu
+
+# Build swift
+PYTHON_EXEC="${PYTHON_EXEC:-$(command -v python)}"
+EXTRA_CMAKE_OPTIONS+=" -DPYTHON_EXECUTABLE:FILEPATH=$PYTHON_EXEC"
+EXTRA_CMAKE_OPTIONS+=" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+EXTRA_CMAKE_OPTIONS+=" -DSWIFT_ENABLE_GOLD_LINKER=NO"
+
+"$SWIFT_PATH"/swift/utils/build-script \
+		--extra-cmake-options="$EXTRA_CMAKE_OPTIONS" \
+		--stdlib-deployment-targets baremetal-armv7m \
+		--export-compile-commands \
+        --baremetal \
+        --baremetal-toolchain "$SWIFT_PATH/gcc-arm-none-eabi/install-native" \
+        --skip-test-baremetal \
+		--build-swift-dynamic-sdk-overlay 0 \
+		--build-swift-static-stdlib 1 \
+		--build-swift-dynamic-stdlib 0 \
+		--build-swift-remote-mirror 0 \
+        "$@"
+		#--build-sil-debugging-stdlib

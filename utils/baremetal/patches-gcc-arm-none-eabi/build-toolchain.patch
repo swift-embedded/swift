@@ -1,0 +1,76 @@
+--- gcc-arm-none-eabi/build-toolchain.sh.orig	2019-01-22 19:48:15.000000000 +0100
++++ gcc-arm-none-eabi/build-toolchain.sh	2019-01-22 19:55:49.000000000 +0100
+@@ -74,7 +74,7 @@
+ DEBUG_BUILD_OPTIONS=
+ is_ppa_release=no
+ is_native_build=yes
+-skip_manual=no
++skip_manual=yes
+ skip_steps=
+ skip_gdb_with_python=no
+ skip_mingw32_gdb_with_python=no
+@@ -244,6 +244,9 @@
+ popd
+ 
+ echo Task [III-1] /$HOST_NATIVE/gcc-first/
++saveenv
++saveenvvar CFLAGS_FOR_TARGET '-fno-short-enums'
++saveenvvar CXXFLAGS_FOR_TARGET '-fno-short-enums'
+ rm -rf $BUILDDIR_NATIVE/gcc-first && mkdir -p $BUILDDIR_NATIVE/gcc-first
+ pushd $BUILDDIR_NATIVE/gcc-first
+ $SRCDIR/$GCC/configure --target=$TARGET \
+@@ -287,11 +290,13 @@
+ rm -rf ./lib/libiberty.a
+ rm -rf  include
+ popd
++restoreenv
+ 
+ echo Task [III-2] /$HOST_NATIVE/newlib/
+ saveenv
+ prepend_path PATH $INSTALLDIR_NATIVE/bin
+-saveenvvar CFLAGS_FOR_TARGET '-g -O2 -ffunction-sections -fdata-sections'
++saveenvvar CFLAGS_FOR_TARGET '-g -O2 -ffunction-sections -fdata-sections -fno-short-enums'
++saveenvvar CXXFLAGS_FOR_TARGET '-g -O2 -ffunction-sections -fdata-sections -fno-short-enums'
+ rm -rf $BUILDDIR_NATIVE/newlib && mkdir -p $BUILDDIR_NATIVE/newlib
+ pushd $BUILDDIR_NATIVE/newlib
+ 
+@@ -360,6 +365,9 @@
+ restoreenv
+ 
+ echo Task [III-4] /$HOST_NATIVE/gcc-final/
++saveenv
++saveenvvar CFLAGS_FOR_TARGET '-fno-short-enums'
++saveenvvar CXXFLAGS_FOR_TARGET '-fno-short-enums'
+ rm -f $INSTALLDIR_NATIVE/arm-none-eabi/usr
+ ln -s . $INSTALLDIR_NATIVE/arm-none-eabi/usr
+ 
+@@ -426,8 +434,12 @@
+ 
+ rm -f $INSTALLDIR_NATIVE/arm-none-eabi/usr
+ popd
++restoreenv
+ 
+ echo Task [III-5] /$HOST_NATIVE/gcc-size-libstdcxx/
++saveenv
++saveenvvar CFLAGS_FOR_TARGET '-fno-short-enums'
++saveenvvar CXXFLAGS_FOR_TARGET '-g -Os -ffunction-sections -fdata-sections -fno-exceptions -fno-short-enums'
+ rm -f $BUILDDIR_NATIVE/target-libs/arm-none-eabi/usr
+ ln -s . $BUILDDIR_NATIVE/target-libs/arm-none-eabi/usr
+ 
+@@ -460,7 +472,7 @@
+     "--with-pkgversion=$PKGVERSION" \
+     ${MULTILIB_LIST}
+ 
+-make -j$JOBS CXXFLAGS="${CXXFLAGS:-}" CXXFLAGS_FOR_TARGET="-g -Os -ffunction-sections -fdata-sections -fno-exceptions"
++make -j$JOBS CXXFLAGS="${CXXFLAGS:-}" CFLAGS_FOR_TARGET="-fno-short-enums" CXXFLAGS_FOR_TARGET="-g -Os -ffunction-sections -fdata-sections -fno-exceptions -fno-short-enums"
+ make install
+ 
+ copy_multi_libs src_prefix="$BUILDDIR_NATIVE/target-libs/arm-none-eabi/lib" \
+@@ -474,6 +486,7 @@
+       $INSTALLDIR_NATIVE/arm-none-eabi/include/newlib-nano/newlib.h
+ 
+ popd
++restoreenv
+ 
+ echo Task [III-6] /$HOST_NATIVE/gdb/
+ build_gdb()

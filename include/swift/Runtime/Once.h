@@ -33,7 +33,7 @@ typedef long swift_once_t;
 // platform word.
 typedef uintptr_t swift_once_t;
 
-#elif defined(_BARE)
+#elif defined(_BAREMETAL)
 
 typedef bool swift_once_t;
 
