@@ -16,7 +16,7 @@
 
 #include "../SwiftShims/UnicodeShims.h"
 
-#ifndef _BARE
+#ifndef _BAREMETAL
 
 #include <stdint.h>
 
@@ -313,4 +313,4 @@ asm(".linker_option \"-licucore\"\n");
 #endif // defined(__MACH__)
 
 
-#endif // defined(_BARE)
+#endif // defined(_BAREMETAL)

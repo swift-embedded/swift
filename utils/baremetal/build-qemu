@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -e
+
+LOCAL_DIR="$(cd "$(dirname "$0")" && pwd)"
+SWIFT_PATH="$( cd "$(dirname "$0")/../../.." && pwd )"
+QEMU_REMOTE="https://github.com/qemu/qemu.git"
+QEMU_DIR="$SWIFT_PATH/qemu"
+QEMU_COMMIT="808ebd66e467f77c0d1f8c6346235f81e9c99cf2"
+
+if [ -f "$QEMU_DIR/build/arm-softmmu/qemu-system-arm" ] ; then
+    echo "qemu already installed"
+    exit 0
+fi
+
+if [ -d "$QEMU_DIR" ] ; then
+    echo "Uncomplete qemu installation."
+    echo "Please remove $QEMU_DIR and restart the script."
+    exit 1
+fi
+
+echo "Preparing qemu repository..."
+git clone "$QEMU_REMOTE" "$QEMU_DIR"
+git -C "$QEMU_DIR" checkout $QEMU_COMMIT
+git -C "$QEMU_DIR" apply "$LOCAL_DIR/patches-qemu/repo.patch"
+
+echo "Building qemu..."
+mkdir "$QEMU_DIR/build"
+cd "$QEMU_DIR/build"
+../configure \
+    --prefix=/usr/local \
+    --cc=clang \
+    --host-cc=clang \
+    --disable-bsd-user \
+    --disable-guest-agent \
+    --extra-cflags=-DNCURSES_WIDECHAR=1 \
+    --enable-cocoa \
+    --target-list=arm-softmmu
+make

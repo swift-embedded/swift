@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -e
+
+LOCAL_DIR="$(cd "$(dirname "$0")" && pwd)"
+SWIFT_PATH="$( cd "$(dirname "$0")/../../.." && pwd )"
+GCC_ARM_NONE_EABI_URL="https://developer.arm.com/-/media/Files/downloads/gnu-rm/8-2018q4/gcc-arm-none-eabi-8-2018-q4-major-src.tar.bz2"
+GCC_ARM_NONE_EABI_DIR="$SWIFT_PATH/gcc-arm-none-eabi"
+GCC_ARM_NONE_EABI_ARCHIVE="$LOCAL_DIR/gcc-arm-none-eabi.tar.bz2"
+
+if [ -d "$GCC_ARM_NONE_EABI_DIR/install-native/bin" ] ; then
+    echo "gcc-arm-none-eabi already installed"
+    exit 0
+fi
+
+if ! [ -f "$GCC_ARM_NONE_EABI_ARCHIVE" ] ; then
+    echo "Downloading gcc-arm-none-eabi source..."
+    curl $GCC_ARM_NONE_EABI_URL -L -# --output "$GCC_ARM_NONE_EABI_ARCHIVE"
+fi
+
+if [ -d "$GCC_ARM_NONE_EABI_DIR" ] ; then
+    echo "Uncomplete gcc-arm-none-eabi installation."
+    echo "Please remove $GCC_ARM_NONE_EABI_DIR and restart the script."
+    exit 1
+fi
+mkdir "$GCC_ARM_NONE_EABI_DIR"
+
+echo "Unpacking gcc-arm-none-eabi..."
+tar xf "$GCC_ARM_NONE_EABI_ARCHIVE" -C "$GCC_ARM_NONE_EABI_DIR" --strip-components 1
+
+echo "Patching build scripts..."
+patch -u "$GCC_ARM_NONE_EABI_DIR/build-common.sh" "$LOCAL_DIR/patches-gcc-arm-none-eabi/build-common.patch"
+patch -u "$GCC_ARM_NONE_EABI_DIR/build-toolchain.sh" "$LOCAL_DIR/patches-gcc-arm-none-eabi/build-toolchain.patch"
+
+cd "$GCC_ARM_NONE_EABI_DIR"
+./install-sources.sh
+./build-prerequisites.sh
+./build-toolchain.sh
