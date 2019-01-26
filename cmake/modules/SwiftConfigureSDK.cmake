@@ -246,8 +246,7 @@ macro(configure_sdk_unix name architectures)
   _report_sdk("${prefix}")
 endmacro()
 
-macro(configure_sdk_bare
-    prefix name lib_subdir triple_name architectures triple sdkpath)
+macro(configure_sdk_baremetal prefix name architectures toolchain_path)
   # Note: this has to be implemented as a macro because it sets global
   # variables.
 
@@ -255,16 +254,16 @@ macro(configure_sdk_bare
   set(SWIFT_SDK_${prefix}_VERSION "don't use")
   set(SWIFT_SDK_${prefix}_BUILD_NUMBER "don't use")
   set(SWIFT_SDK_${prefix}_DEPLOYMENT_VERSION "")
-  set(SWIFT_SDK_${prefix}_LIB_SUBDIR "${lib_subdir}")
+  set(SWIFT_SDK_${prefix}_LIB_SUBDIR "baremetal")
   set(SWIFT_SDK_${prefix}_VERSION_MIN_NAME "")
-  set(SWIFT_SDK_${prefix}_TRIPLE_NAME "${triple_name}")
+  set(SWIFT_SDK_${prefix}_TRIPLE_NAME "arm-none-eabi")
   set(SWIFT_SDK_${prefix}_ARCHITECTURES "${architectures}")
   set(SWIFT_SDK_${prefix}_OBJECT_FORMAT "ELF")
 
   foreach(arch ${architectures})
-    set(SWIFT_SDK_${prefix}_ARCH_${arch}_PATH "${sdkpath}")
+    set(SWIFT_SDK_${prefix}_ARCH_${arch}_PATH "${toolchain_path}")
     set(SWIFT_SDK_${prefix}_ARCH_${arch}_TRIPLE "armv7m-none-eabi")
-    set(SWIFT_SDK_${prefix}_ARCH_${arch}_LINKER "${sdkpath}/bin/ld")
+    set(SWIFT_SDK_${prefix}_ARCH_${arch}_LINKER "${toolchain_path}/bin/ld")
   endforeach()
 
   # Add this to the list of known SDKs.

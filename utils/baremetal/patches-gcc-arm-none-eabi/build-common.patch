@@ -1,0 +1,31 @@
+--- gcc-arm-none-eabi/build-common.sh	2018-12-16 10:04:32.000000000 +0100
++++ gcc-arm-none-eabi-my/build-common.sh	2018-10-31 06:28:41.000000000 +0100
+@@ -307,7 +308,6 @@
+ 
+ # Set variables according to real environment to make this script can run
+ # on Ubuntu and Mac OS X.
+-TAR=tar
+ uname_string=`uname | sed 'y/LINUXDARWIN/linuxdarwin/'`
+ host_arch=`uname -m | sed 'y/XI/xi/'`
+ if [ "x$uname_string" == "xlinux" ] ; then
+@@ -316,6 +316,7 @@
+     READLINK=readlink
+     JOBS=`grep ^processor /proc/cpuinfo|wc -l`
+     GCC_CONFIG_OPTS_LCPP="--with-host-libstdcxx=-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm"
++    TAR=tar
+     MD5="md5sum -b"
+     PACKAGE_NAME_SUFFIX=linux
+ elif [ "x$uname_string" == "xdarwin" ] ; then
+@@ -323,9 +324,10 @@
+     HOST_NATIVE=x86_64-apple-darwin10
+     READLINK=greadlink
+     # Disable parallel build for mac as we will randomly run into "Permission denied" issue.
+-    JOBS=`sysctl -n hw.ncpu`
+-    #JOBS=1
++    #JOBS=`sysctl -n hw.ncpu`
++    JOBS=1
+     GCC_CONFIG_OPTS_LCPP="--with-host-libstdcxx=-static-libgcc -Wl,-lstdc++ -lm"
++    TAR=gtar
+     MD5="md5 -r"
+     PACKAGE_NAME_SUFFIX=mac
+ else

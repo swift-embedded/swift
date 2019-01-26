@@ -195,6 +195,13 @@ set(SWIFT_ANDROID_DEPLOY_DEVICE_PATH "" CACHE STRING
   "Path on an Android device where build products will be pushed. These are used when running the test suite against the device")
 
 #
+# User-configurable BareMetal specific options.
+#
+
+set(SWIFT_BAREMETAL_TOOLCHAIN_PATH "" CACHE STRING
+  "Path to the directory with required toolchain (currently customized arm-none-eabi).")
+
+#
 # User-configurable ICU specific options for Android, FreeBSD, Linux and Haiku.
 #
 
@@ -743,10 +750,10 @@ if(swift_build_windows AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   configure_sdk_windows("Windows" "msvc" "${SWIFT_SDK_WINDOWS_ARCHITECTURES}")
 endif()
 
-is_sdk_requested(BARE swift_build_bare)
-if(swift_build_bare)
-  configure_sdk_bare(BARE "Bare" "bare" "none" "armv7m" "armv7m-none-eabi" "/usr/local/Cellar/gcc-arm-none-eabi-63/20170628/arm-none-eabi")
-  set(SWIFT_PRIMARY_VARIANT_SDK_default "BARE")
+is_sdk_requested(BAREMETAL swift_build_baremetal)
+if(swift_build_baremetal)
+  configure_sdk_baremetal(BAREMETAL "BareMetal" "armv7m" "${SWIFT_BAREMETAL_TOOLCHAIN_PATH}")
+  set(SWIFT_PRIMARY_VARIANT_SDK_default "BAREMETAL")
   set(SWIFT_PRIMARY_VARIANT_ARCH_default "armv7m")
 endif()
 

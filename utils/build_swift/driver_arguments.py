@@ -138,6 +138,7 @@ def _apply_default_arguments(args):
         args.build_tvos = False
         args.build_watchos = False
         args.build_android = False
+        args.build_baremetal = False
         args.build_benchmarks = False
         args.build_external_benchmarks = False
         args.build_lldb = False
@@ -166,6 +167,9 @@ def _apply_default_arguments(args):
 
     if not args.android or not args.build_android:
         args.build_android = False
+
+    if not args.baremetal or not args.build_baremetal:
+        args.build_baremetal = False
 
     # --test-paths implies --test and/or --validation-test
     # depending on what directories/files have been specified.
@@ -310,6 +314,9 @@ def create_argument_parser():
 
     option('--android', toggle_true,
            help='also build for Android')
+
+    option('--baremetal', toggle_true,
+           help='also build for BareMetal')
 
     option('--swift-analyze-code-coverage', store,
            choices=['false', 'not-merged', 'merged'],
@@ -759,7 +766,7 @@ def create_argument_parser():
            help='skip testing Swift stdlibs for FreeBSD')
     option('--skip-test-cygwin', toggle_false('test_cygwin'),
            help='skip testing Swift stdlibs for Cygwin')
-    option('--skip-test-bare', toggle_false('test_bare'),
+    option('--skip-test-baremetal', toggle_false('test_baremetal'),
            help='skip testing Swift stdlibs for Bare Metal')
 
     # -------------------------------------------------------------------------
@@ -824,6 +831,9 @@ def create_argument_parser():
 
     option('--skip-build-android', toggle_false('build_android'),
            help='skip building Swift stdlibs for Android')
+
+    option('--skip-build-baremetal', toggle_false('build_baremetal'),
+           help='skip building Swift stdlibs for BareMetal')
 
     option('--skip-build-benchmarks', toggle_false('build_benchmarks'),
            help='skip building Swift Benchmark Suite')
@@ -920,6 +930,13 @@ def create_argument_parser():
                 'products will be deployed. If running host tests, specify '
                 'the "{}" directory.'.format(
                     android.adb.commands.DEVICE_TEMP_DIR))
+
+    # -------------------------------------------------------------------------
+    in_group('Build settings for BareMetal')
+
+    option('--baremetal-toolchain', store_path,
+           help='Path to the toolchain that should be '
+                'used for cross-compilation.')
 
     # -------------------------------------------------------------------------
     in_group('Unsupported options')

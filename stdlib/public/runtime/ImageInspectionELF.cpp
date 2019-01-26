@@ -22,7 +22,7 @@
 
 #include "ImageInspection.h"
 #include "ImageInspectionELF.h"
-#ifndef _BARE
+#ifndef _BAREMETAL
 #include <dlfcn.h>
 #else
 #include <cassert>
@@ -131,7 +131,7 @@ void swift_addNewDSOImage(const void *addr) {
 }
 
 int swift::lookupSymbol(const void *address, SymbolInfo *info) {
-#ifdef _BARE
+#ifdef _BAREMETAL
   assert(false && "lookupSymbol not supported");
 #else
   Dl_info dlinfo;

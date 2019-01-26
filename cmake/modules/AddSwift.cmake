@@ -2,6 +2,7 @@ include(SwiftList)
 include(SwiftXcodeSupport)
 include(SwiftWindowsSupport)
 include(SwiftAndroidSupport)
+include(SwiftBareMetalSupport)
 
 # SWIFTLIB_DIR is the directory in the build tree where Swift resource files
 # should be placed.  Note that $CMAKE_CFG_INTDIR expands to "." for
@@ -140,7 +141,8 @@ function(_add_variant_c_compile_link_flags)
     endif()
   endif()
 
-  if("${CFLAGS_SDK}" STREQUAL "BARE")
+
+  if("${CFLAGS_SDK}" STREQUAL "BAREMETAL")
   endif()
 
   if(IS_DARWIN)
@@ -312,19 +314,16 @@ function(_add_variant_c_compile_flags)
 
   set(ARM_TOOLCHAIN /Users/alandragomirecky/Projects/cvut/masters_thesis/src/gcc-arm-none-eabi/install-native)
 
-  if("${CFLAGS_SDK}" STREQUAL "BARE")
-    list(APPEND result "-D_BARE")
-    list(APPEND result "-D_GNU_SOURCE")
-    list(APPEND result "-D_POSIX_THREADS")
-    list(APPEND result "-D_POSIX_READER_WRITER_LOCKS")
-    list(APPEND result "-D_UNIX98_THREAD_MUTEX_ATTRIBUTES")
+  if("${CFLAGS_SDK}" STREQUAL "BAREMETAL")
+    list(APPEND result "-D_BAREMETAL" "-D_GNU_SOURCE")
+    list(APPEND result "-D_POSIX_THREADS" "-D_POSIX_READER_WRITER_LOCKS" "-D_UNIX98_THREAD_MUTEX_ATTRIBUTES")
+    list(APPEND result "-fdata-sections" "-ffunction-sections" "-ffreestanding")
     list(APPEND result "-I/Users/alandragomirecky/Projects/cvut/masters_thesis/stdlib_add")
-    list(APPEND result "-I${ARM_TOOLCHAIN}/arm-none-eabi/include/c++/7.3.1/arm-none-eabi")
-    list(APPEND result "-I${ARM_TOOLCHAIN}/arm-none-eabi/include/c++/7.3.1")
-    list(APPEND result "-I${ARM_TOOLCHAIN}/arm-none-eabi/include")
-    list(APPEND result "-I${ARM_TOOLCHAIN}/lib/gcc/arm-none-eabi/7.3.1/include-fixed")
-    list(APPEND result "-isysroot" "${ARM_TOOLCHAIN}/arm-none-eabi")
-    list(APPEND result "-fdata-sections" "-ffunction-sections")
+
+    swift_baremetal_include_for_arch("${CFLAGS_ARCH}" "${CFLAGS_ARCH}_INCLUDES")
+    foreach(path IN LISTS ${CFLAGS_ARCH}_INCLUDES)
+      list(APPEND result "${path}")
+    endforeach()
   endif()
 
   set("${CFLAGS_RESULT_VAR_NAME}" "${result}" PARENT_SCOPE)
@@ -357,8 +356,8 @@ function(_add_variant_swift_compile_flags
     endforeach()
   endif()
 
-  if("${sdk}" STREQUAL "BARE")
-    list(APPEND result "-Xcc" "-D_BARE")
+  if("${sdk}" STREQUAL "BAREMETAL")
+    list(APPEND result "-Xcc" "-D_BAREMETAL")
   endif()
 
   if(NOT BUILD_STANDALONE)
@@ -468,10 +467,12 @@ function(_add_variant_link_flags)
     foreach(path IN LISTS ${LFLAGS_ARCH}_LIB)
       list(APPEND library_search_directories ${path})
     endforeach()
-  elseif("${LFLAGS_SDK}" STREQUAL "BARE")
-      list(APPEND result "-nostdlib" "-Wl,--start-group" "-lc" "-lgcc" "-lsupc++" "-lstdc++" "-lnosys" "-Wl,--end-group")
-      list(APPEND library_search_directories "/Users/alandragomirecky/Projects/cvut/masters_thesis/src/gcc-arm-none-eabi/install-native/arm-none-eabi/lib")
-      list(APPEND library_search_directories "/Users/alandragomirecky/Projects/cvut/masters_thesis/src/gcc-arm-none-eabi/install-native/lib/gcc/arm-none-eabi/7.3.1")
+  elseif("${LFLAGS_SDK}" STREQUAL "BAREMETAL")
+    list(APPEND result "-nostdlib" "-Wl,--start-group" "-lc" "-lgcc" "-lsupc++" "-lstdc++" "-lnosys" "-Wl,--end-group")
+    swift_baremetal_lib_for_arch(${LFLAGS_ARCH} ${LFLAGS_ARCH}_LIB)
+    foreach (path IN LISTS ${LFLAGS_ARCH}_LIB)
+      list(APPEND library_search_directories "${path}")
+    endforeach()
   else()
     # If lto is enabled, we need to add the object path flag so that the LTO code
     # generator leaves the intermediate object file in a place where it will not

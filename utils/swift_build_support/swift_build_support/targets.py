@@ -121,9 +121,9 @@ class StdlibDeploymentTarget(object):
         "powerpc64le",
         "s390x"])
 
-    BareMetal = Platform("bare",
-                         archs=["armv7m", "armv6m"],
-                         sdk_name="BARE")
+    BareMetal = Platform("baremetal",
+                         archs=["armv7m"],
+                         sdk_name="BAREMETAL")
 
     FreeBSD = Platform("freebsd", archs=["x86_64"])
 

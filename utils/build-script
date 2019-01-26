@@ -257,6 +257,12 @@ class BuildScriptInvocation(object):
                     "--android-icu-uc-include, --android-icu-i18n, "
                     "and --android-icu-i18n-include must be specified")
 
+        if args.baremetal:
+            if args.baremetal_toolchain is None:
+                diagnostics.fatal(
+                    'When building for BareMetal, --baremetal-toolchain'
+                    ' must be specified.')
+
     @staticmethod
     def apply_default_arguments(toolchain, args):
         # Infer if ninja is required
@@ -356,7 +362,7 @@ class BuildScriptInvocation(object):
             self.platforms_to_skip_test.add(StdlibDeploymentTarget.FreeBSD)
         if not args.test_cygwin:
             self.platforms_to_skip_test.add(StdlibDeploymentTarget.Cygwin)
-        if not args.test_bare:
+        if not args.test_baremetal:
             self.platforms_to_skip_test.add(StdlibDeploymentTarget.BareMetal)
         if not args.test_osx:
             self.platforms_to_skip_test.add(StdlibDeploymentTarget.OSX)
@@ -650,8 +656,8 @@ class BuildScriptInvocation(object):
                           "--skip-test-libdispatch",
                           "--skip-test-libicu",
                           "--skip-test-playgroundsupport"]
-        if not args.test_bare:
-            impl_args += ["--skip-test-bare"]
+        if not args.test_baremetal:
+            impl_args += ["--skip-test-baremetal"]
         if not args.test_linux:
             impl_args += ["--skip-test-linux"]
         if not args.test_freebsd:
@@ -706,6 +712,10 @@ class BuildScriptInvocation(object):
             impl_args += [
                 "--android-deploy-device-path",
                 args.android_deploy_device_path,
+            ]
+        if args.baremetal:
+            impl_args += [
+                "--baremetal-toolchain", args.baremetal_toolchain,
             ]
 
         if platform.system() == 'Darwin':

@@ -1,0 +1,55 @@
+diff --git a/hw/arm/stellaris.c b/hw/arm/stellaris.c
+index 6c69ce79b2..c9eb745b00 100644
+--- a/hw/arm/stellaris.c
++++ b/hw/arm/stellaris.c
+@@ -1211,7 +1211,7 @@ static stellaris_board_info stellaris_boards[] = {
+   { "LM3S811EVB",
+     0,
+     0x0032000e,
+-    0x001f001f, /* dc0 */
++    0xffffffff, /* dc0 */
+     0x001132bf,
+     0x01071013,
+     0x3f0f01ff,
+@@ -1221,7 +1221,7 @@ static stellaris_board_info stellaris_boards[] = {
+   { "LM3S6965EVB",
+     0x10010002,
+     0x1073402e,
+-    0x00ff007f, /* dc0 */
++    0xffffffff, /* dc0 */
+     0x001133ff,
+     0x030f5317,
+     0x0f0f87ff,
+@@ -1288,8 +1288,12 @@ static void stellaris_init(MachineState *ms, stellaris_board_info *board)
+     MemoryRegion *flash = g_new(MemoryRegion, 1);
+     MemoryRegion *system_memory = get_system_memory();
+ 
+-    flash_size = (((board->dc0 & 0xffff) + 1) << 1) * 1024;
+-    sram_size = ((board->dc0 >> 18) + 1) * 1024;
++    flash_size = ((board->dc0 & 0xffff) + 1) * 1024;
++    sram_size = ((board->dc0 >> 16) + 1) * 1024;
++
++    qemu_log_mask(LOG_GUEST_ERROR,
++                  "Flash size: %i, RAM size: %i\n",
++                  flash_size, sram_size);
+ 
+     /* Flash programming is done via the SCU, so pretend it is ROM.  */
+     memory_region_init_ram(flash, NULL, "stellaris.flash", flash_size,
+@@ -1461,7 +1465,7 @@ static void lm3s811evb_class_init(ObjectClass *oc, void *data)
+ 
+     mc->desc = "Stellaris LM3S811EVB";
+     mc->init = lm3s811evb_init;
+-    mc->ignore_memory_transaction_failures = true;
++    //mc->ignore_memory_transaction_failures = true;
+     mc->default_cpu_type = ARM_CPU_TYPE_NAME("cortex-m3");
+ }
+ 
+@@ -1477,7 +1481,7 @@ static void lm3s6965evb_class_init(ObjectClass *oc, void *data)
+ 
+     mc->desc = "Stellaris LM3S6965EVB";
+     mc->init = lm3s6965evb_init;
+-    mc->ignore_memory_transaction_failures = true;
++    //mc->ignore_memory_transaction_failures = true;
+     mc->default_cpu_type = ARM_CPU_TYPE_NAME("cortex-m3");
+ }
+ 

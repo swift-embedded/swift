@@ -7,7 +7,7 @@
 # If libicu is built locally then include libicudata
 #
 
-# SDK=$1
+SDK=$1
 OUTPUTFILE=$2
 ICU_STATIC_LIB=$3
 # libdirs from pkg-config
@@ -76,9 +76,39 @@ EOF
 }
 
 
+function write_baremetal_linkfile {
+    if [ -z "${OUTPUTFILE}" ]; then
+        echo $0: No outputfile specified
+        exit 1
+    fi
+    cat >$OUTPUTFILE <<EOF
+-nostdlib
+-lswiftCore
+-Xlinker
+--start-group
+-lc
+-lgcc
+-lsupc++
+-lstdc++
+-lnosys
+-Xlinker
+--end-group
+-Xlinker
+--exclude-libs
+-Xlinker
+ALL
+EOF
+}
+
+
 if [ "${ICU_STATIC_LIB}" == "TRUE" ]; then
     use_local_iculibs
 else
     find_static_iculibs
 fi
-write_linkfile
+
+if [ "$SDK" == "BAREMETAL" ]; then
+    write_baremetal_linkfile
+else
+    write_linkfile
+fi

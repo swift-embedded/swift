@@ -28,7 +28,7 @@
 
 // If we're using Clang, and Clang claims not to support thread_local,
 // it must be because we're on a platform that doesn't support it.
-#if __clang__ && !__has_feature(cxx_thread_local) || defined(_BARE)
+#if __clang__ && !__has_feature(cxx_thread_local) || defined(_BAREMETAL)
 // No thread_local.
 #else
 // Otherwise, we do have thread_local.
@@ -76,7 +76,7 @@ typedef int __swift_thread_key_t;
 typedef unsigned long __swift_thread_key_t;
 # elif defined(__HAIKU__)
 typedef int __swift_thread_key_t;
-# elif defined(_BARE)
+# elif defined(_BAREMETAL)
 typedef unsigned int __swift_thread_key_t;
 # else
 typedef unsigned long __swift_thread_key_t;

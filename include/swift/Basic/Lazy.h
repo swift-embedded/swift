@@ -36,7 +36,7 @@ namespace swift {
   using OnceToken_t = unsigned long;
 # define SWIFT_ONCE_F(TOKEN, FUNC, CONTEXT) \
   _swift_once_f(&TOKEN, CONTEXT, FUNC)
-#elif defined(_BARE)
+#elif defined(_BAREMETAL)
   using OnceToken_t = bool;
 # define SWIFT_ONCE_F(TOKEN, FUNC, CONTEXT) \
   do{if(!TOKEN){TOKEN=true; FUNC(CONTEXT);}}while(0)
