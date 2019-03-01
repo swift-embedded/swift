@@ -370,7 +370,9 @@ function(_add_variant_swift_compile_flags
   endif()
 
   is_build_type_optimized("${build_type}" optimized)
-  if(optimized)
+  if(${sdk} STREQUAL "BAREMETAL")
+    list(APPEND result "-Osize")
+  elseif(optimized)
     list(APPEND result "-O")
   else()
     list(APPEND result "-Onone")
