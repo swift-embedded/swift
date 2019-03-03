@@ -357,7 +357,7 @@ function(_add_variant_swift_compile_flags
   endif()
 
   if("${sdk}" STREQUAL "BAREMETAL")
-    list(APPEND result "-Xcc" "-D_BAREMETAL")
+    list(APPEND result "-Xcc" "-D_BAREMETAL" "-Xfrontend" "-disable-reflection-metadata")
   endif()
 
   if(NOT BUILD_STANDALONE)

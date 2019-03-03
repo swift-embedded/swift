@@ -83,6 +83,8 @@ bool IRGenerator::tryEnableLazyTypeMetadata(NominalTypeDecl *Nominal) {
   if (Opts.UseJIT)
     return false;
 
+  return false;
+
   switch (Nominal->getKind()) {
     case DeclKind::Enum:
     case DeclKind::Struct:
