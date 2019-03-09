@@ -1385,7 +1385,8 @@ public:
 
   /// Mark a global variable as true-const by putting it in the text section of
   /// the binary.
-  void setTrueConstGlobal(llvm::GlobalVariable *var);
+  void setTrueConstGlobal(llvm::GlobalVariable *var,
+                          Optional<std::string> sectionSuffix = Optional<std::string>());
 
   /// Add the swiftself attribute.
   void addSwiftSelfAttributes(llvm::AttributeList &attrs, unsigned argIndex);

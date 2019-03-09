@@ -2091,8 +2091,9 @@ void IRGenModule::emitProtocolConformance(
     cast<llvm::GlobalVariable>(
           getAddrOfProtocolConformanceDescriptor(conformance,
                                                  init.finishAndCreateFuture()));
+  auto entity = LinkEntity::forProtocolConformanceDescriptor(conformance);
   var->setConstant(true);
-  setTrueConstGlobal(var);
+  setTrueConstGlobal(var, entity.mangleAsString());
 }
 
 void IRGenModule::ensureRelativeSymbolCollocation(SILWitnessTable &wt) {
@@ -2278,6 +2279,8 @@ void IRGenModule::emitSILWitnessTable(SILWitnessTable *wt) {
         : getAddrOfWitnessTable(conf, initializer));
     global->setConstant(isConstantWitnessTable(wt));
     global->setAlignment(getWitnessTableAlignment().getValue());
+    auto linkEntity = LinkEntity::forProtocolWitnessTable(conf);
+    global->setSection(".rodata." + linkEntity.mangleAsString());
     tableSize = wtableBuilder.getTableSize();
   } else {
     initializer.abandon();

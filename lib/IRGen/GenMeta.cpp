@@ -103,25 +103,31 @@ static Address createPointerSizedGEP(IRGenFunction &IGF,
                                          offset);
 }
 
-void IRGenModule::setTrueConstGlobal(llvm::GlobalVariable *var) {
-  disableAddressSanitizer(*this, var);
-  
+void IRGenModule::setTrueConstGlobal(llvm::GlobalVariable *var,
+                                     Optional<std::string> sectionSuffix) {
+  std::string sectionName;
+
   switch (TargetInfo.OutputObjectFormat) {
   case llvm::Triple::UnknownObjectFormat:
     llvm_unreachable("unknown object format");
   case llvm::Triple::MachO:
-    var->setSection("__TEXT,__const");
+    sectionName = "__TEXT,__const";
     break;
   case llvm::Triple::ELF:
-    var->setSection(".rodata");
+    sectionName = ".rodata";
     break;
   case llvm::Triple::COFF:
-    var->setSection(".rdata");
+    sectionName = ".rdata";
     break;
   case llvm::Triple::Wasm:
     llvm_unreachable("web assembly object format is not supported.");
     break;
   }
+
+  if (sectionSuffix.hasValue())
+    sectionName += "." + sectionSuffix.getValue();
+
+  var->setSection(sectionName);
 }
 
 /*****************************************************************************/
@@ -433,7 +439,9 @@ namespace {
       auto var = cast<llvm::GlobalVariable>(addr);
       
       var->setConstant(true);
-      IGM.setTrueConstGlobal(var);
+      auto linkEntity = LinkEntity::forModuleDescriptor(M);
+      auto sectionSuffix = linkEntity.mangleAsString();
+      IGM.setTrueConstGlobal(var, sectionSuffix);
     }
   };
 
@@ -491,7 +499,9 @@ namespace {
       auto var = cast<llvm::GlobalVariable>(addr);
       
       var->setConstant(true);
-      IGM.setTrueConstGlobal(var);
+      auto linkEntity = LinkEntity::forExtensionDescriptor(E);
+      auto sectionSuffix = linkEntity.mangleAsString();
+      IGM.setTrueConstGlobal(var, sectionSuffix);
     }
   };
   
@@ -558,7 +568,9 @@ namespace {
       auto var = cast<llvm::GlobalVariable>(addr);
       
       var->setConstant(true);
-      IGM.setTrueConstGlobal(var);
+      auto linkEntity = LinkEntity::forAnonymousDescriptor(DC);
+      auto sectionSuffix = linkEntity.mangleAsString();
+      IGM.setTrueConstGlobal(var, sectionSuffix);
     }
   };
 
@@ -626,7 +638,9 @@ namespace {
       auto var = cast<llvm::GlobalVariable>(addr);
 
       var->setConstant(true);
-      IGM.setTrueConstGlobal(var);
+      auto linkEntity = LinkEntity::forProtocolDescriptor(Proto);
+      auto sectionSuffix = linkEntity.mangleAsString();
+      IGM.setTrueConstGlobal(var, sectionSuffix);
     }
 
     void addName() {
@@ -1095,7 +1109,9 @@ namespace {
       auto var = cast<llvm::GlobalVariable>(addr);
       
       var->setConstant(true);
-      IGM.setTrueConstGlobal(var);
+      auto linkEntity = LinkEntity::forNominalTypeDescriptor(Type);
+      auto sectionSuffix = linkEntity.mangleAsString();
+      IGM.setTrueConstGlobal(var, sectionSuffix);
       return var;
     }
 
