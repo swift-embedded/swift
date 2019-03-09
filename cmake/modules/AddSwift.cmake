@@ -318,6 +318,7 @@ function(_add_variant_c_compile_flags)
     list(APPEND result "-D_BAREMETAL" "-D_GNU_SOURCE")
     list(APPEND result "-D_POSIX_THREADS" "-D_POSIX_READER_WRITER_LOCKS" "-D_UNIX98_THREAD_MUTEX_ATTRIBUTES")
     list(APPEND result "-fdata-sections" "-ffunction-sections" "-ffreestanding")
+    list(APPEND result "-fno-rtti" "-fno-exceptions")
     list(APPEND result "-I/Users/alandragomirecky/Projects/cvut/masters_thesis/stdlib_add")
 
     swift_baremetal_include_for_arch("${CFLAGS_ARCH}" "${CFLAGS_ARCH}_INCLUDES")
