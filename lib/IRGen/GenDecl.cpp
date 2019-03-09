@@ -3003,30 +3003,6 @@ llvm::Constant *IRGenModule::emitSwiftProtocols() {
   if (SwiftProtocols.empty())
     return nullptr;
 
-  // Define the global variable for the protocol list.
-  ConstantInitBuilder builder(*this);
-  auto recordsArray = builder.beginArray(ProtocolRecordTy);
-
-  for (auto *protocol : SwiftProtocols) {
-    auto record = recordsArray.beginStruct(ProtocolRecordTy);
-
-    // Relative reference to the protocol descriptor.
-    auto descriptorRef = getAddrOfLLVMVariableOrGOTEquivalent(
-                                   LinkEntity::forProtocolDescriptor(protocol));
-    record.addRelativeAddress(descriptorRef);
-
-    record.finishAndAddTo(recordsArray);
-  }
-
-  // FIXME: This needs to be a linker-local symbol in order for Darwin ld to
-  // resolve relocations relative to it.
-
-  auto var = recordsArray.finishAndCreateGlobal(
-                                            "\x01l_protocols",
-                                            Alignment(4),
-                                            /*isConstant*/ true,
-                                            llvm::GlobalValue::PrivateLinkage);
-
   StringRef sectionName;
   switch (TargetInfo.OutputObjectFormat) {
   case llvm::Triple::UnknownObjectFormat:
@@ -3044,12 +3020,64 @@ llvm::Constant *IRGenModule::emitSwiftProtocols() {
     break;
   }
 
-  var->setSection(sectionName);
-  
-  disableAddressSanitizer(*this, var);
-  
-  addUsedGlobal(var);
-  return var;
+  bool separately = true;
+
+  auto emitProtocolRecord = [&](ConstantArrayBuilder& records, ProtocolDecl* protocol) {
+    auto record = records.beginStruct(ProtocolRecordTy);
+
+    // Relative reference to the protocol descriptor.
+    auto descriptorRef = getAddrOfLLVMVariableOrGOTEquivalent(LinkEntity::forProtocolDescriptor(protocol));
+    record.addRelativeAddress(descriptorRef);
+
+    record.finishAndAddTo(records);
+  };
+
+  // Define the global variable for the protocol list.
+  ConstantInitBuilder builder(*this);
+
+  if (!separately) {
+    auto recordsArray = builder.beginArray(ProtocolRecordTy);
+
+    for (auto *protocol : SwiftProtocols) {
+      emitProtocolRecord(recordsArray, protocol);
+    }
+
+    // FIXME: This needs to be a linker-local symbol in order for Darwin ld to
+    // resolve relocations relative to it.
+    auto var = recordsArray.finishAndCreateGlobal(
+                                              "\x01l_protocols",
+                                              Alignment(4),
+                                              /*isConstant*/ true,
+                                              llvm::GlobalValue::PrivateLinkage);
+    var->setSection(sectionName);
+    disableAddressSanitizer(*this, var);
+    addUsedGlobal(var);
+    return var;
+  } else {
+    for (auto *protocol : SwiftProtocols) {
+      auto recordsArray = builder.beginArray(ProtocolRecordTy);
+      auto linkEntity = LinkEntity::forProtocolDescriptor(protocol);
+      auto mangledName = linkEntity.mangleAsString();
+      emitProtocolRecord(recordsArray, protocol);
+      auto var = recordsArray.finishAndCreateGlobal("\x01l_protocol_" + mangledName,
+                                                    Alignment(4),
+                                                    /*isConstant*/ true,
+                                                    llvm::GlobalValue::PrivateLinkage);
+      var->setSection((sectionName + "." + mangledName).str());
+
+      // Add comdat group for the record and the metadata
+      auto metadataRef = getAddrOfLLVMVariableOrGOTEquivalent(linkEntity);
+      auto metadataValue = dyn_cast<llvm::GlobalObject>(metadataRef.getDirectValue());
+      auto comdat = Module.getOrInsertComdat("protocol_" + mangledName);
+      comdat->setSelectionKind(llvm::Comdat::SelectionKind::Any);
+      var->setComdat(comdat);
+      metadataValue->setComdat(comdat);
+
+      disableAddressSanitizer(*this, var);
+      addUsedGlobal(var);
+    }
+    return nullptr;
+  }
 }
 
 void IRGenModule::addProtocolConformance(ConformanceDescription &&record) {
@@ -3057,64 +3085,136 @@ void IRGenModule::addProtocolConformance(ConformanceDescription &&record) {
   ProtocolConformances.push_back(std::move(record));
 }
 
+static llvm::Comdat* tryGetOrCreateComdatForLinkEntity(IRGenModule& IGM, LinkEntity& linkEntity) {
+    auto reference = IGM.getAddrOfLLVMVariableOrGOTEquivalent(linkEntity);
+
+    if (reference.isIndirect())
+      return nullptr;
+
+    auto global = dyn_cast<llvm::GlobalObject>(reference.getDirectValue());
+
+    if (global->hasComdat())
+      return global->getComdat();
+
+    auto comd = IGM.Module.getOrInsertComdat("entity_" + linkEntity.mangleAsString());
+    comd->setSelectionKind(llvm::Comdat::SelectionKind::Any);
+    global->setComdat(comd);
+
+    return comd;
+}
+
 /// Emit the protocol conformance list and return it.
 llvm::Constant *IRGenModule::emitProtocolConformances() {
   if (ProtocolConformances.empty())
     return nullptr;
 
-  // Emit the conformances.
-  for (const auto &record : ProtocolConformances)
-    emitProtocolConformance(record);
-
-  // Define the global variable for the conformance list.
-  ConstantInitBuilder builder(*this);
-  auto descriptorArray = builder.beginArray(RelativeAddressTy);
-
-  for (const auto &record : ProtocolConformances) {
-    auto conformance = record.conformance;
-    auto entity = LinkEntity::forProtocolConformanceDescriptor(conformance);
-    auto descriptor =
-      getAddrOfLLVMVariable(entity, ConstantInit(), DebugTypeInfo());
-    descriptorArray.addRelativeAddress(descriptor);
-  }
-
-  // FIXME: This needs to be a linker-local symbol in order for Darwin ld to
-  // resolve relocations relative to it.
-
-  auto var = descriptorArray.finishAndCreateGlobal(
-                                          "\x01l_protocol_conformances",
-                                          Alignment(4),
-                                          /*isConstant*/ true,
-                                          llvm::GlobalValue::PrivateLinkage);
-
   StringRef sectionName;
   switch (TargetInfo.OutputObjectFormat) {
-  case llvm::Triple::UnknownObjectFormat:
-    llvm_unreachable("Don't know how to emit protocol conformances for "
-                     "the selected object format.");
   case llvm::Triple::MachO:
     sectionName = "__TEXT, __swift5_proto, regular, no_dead_strip";
     break;
   case llvm::Triple::ELF:
-  case llvm::Triple::Wasm:
     sectionName = "swift5_protocol_conformances";
     break;
   case llvm::Triple::COFF:
     sectionName = ".sw5prtc$B";
     break;
+  default:
+    llvm_unreachable("Don't know how to emit protocol conformances for "
+                     "the selected object format.");
   }
 
-  var->setSection(sectionName);
+  // Emit the conformances.
+  for (const auto &record : ProtocolConformances)
+    emitProtocolConformance(record);
 
-  disableAddressSanitizer(*this, var);
-  
-  addUsedGlobal(var);
-  return var;
+    if (record.conformance->isBehaviorConformance())
+      continue;
+
+    anyReflectedConformances = true;
+  }
+
+  if (!anyReflectedConformances)
+    return nullptr;
+
+  auto emitConformanceRecord = [&](ConstantArrayBuilder& records, const ConformanceDescription& record) {
+    auto conformance = record.conformance;
+    auto entity = LinkEntity::forProtocolConformanceDescriptor(conformance);
+    auto descriptor =
+      getAddrOfLLVMVariable(entity, ConstantInit(), DebugTypeInfo());
+    records.addRelativeAddress(descriptor);
+  };
+
+  bool separately = true;
+  ConstantInitBuilder builder(*this);
+
+  if (!separately) {
+    // Define the global variable for the conformance list.
+    auto descriptorArray = builder.beginArray(RelativeAddressTy);
+
+    for (const auto &record : ProtocolConformances) {
+      auto conformance = record.conformance;
+
+      // Behavior conformances cannot be reflected.
+      if (conformance->isBehaviorConformance())
+        continue;
+
+      emitConformanceRecord(descriptorArray, record);
+    }
+
+    // FIXME: This needs to be a linker-local symbol in order for Darwin ld to
+    // resolve relocations relative to it.
+    auto var = descriptorArray.finishAndCreateGlobal(
+                                            "\x01l_protocol_conformances",
+                                            Alignment(4),
+                                            /*isConstant*/ true,
+                                            llvm::GlobalValue::PrivateLinkage);
+
+    var->setSection(sectionName);
+    disableAddressSanitizer(*this, var);
+    addUsedGlobal(var);
+    return var;
+  } else {
+    for (const auto &record : ProtocolConformances) {
+      auto conformance = record.conformance;
+
+      // Behavior conformances cannot be reflected.
+      if (conformance->isBehaviorConformance())
+        continue;
+
+      auto descriptorArray = builder.beginArray(RelativeAddressTy);
+      emitConformanceRecord(descriptorArray, record);
+      auto entity = LinkEntity::forProtocolConformanceDescriptor(record.conformance);
+      auto mangledName = entity.mangleAsString();
+      auto var = descriptorArray.finishAndCreateGlobal(
+                                            "\x01l_protocol_conformance_" + mangledName,
+                                            Alignment(4),
+                                            /*isConstant*/ true,
+                                            llvm::GlobalValue::PrivateLinkage);
+
+      auto dependency = LinkEntity::forNominalTypeDescriptor(record.conformance->getType()->getAnyNominal());
+      if (auto comdat = tryGetOrCreateComdatForLinkEntity(*this, dependency)) {
+        var->setSection((sectionName + "." + mangledName).str());
+        var->setComdat(comdat);
+      } else {
+        var->setSection(sectionName);
+      }
+
+      //
+      disableAddressSanitizer(*this, var);
+      addUsedGlobal(var);
+    }
+    return nullptr;
+  }
 }
 
 
 /// Emit type metadata for types that might not have explicit protocol conformances.
 llvm::Constant *IRGenModule::emitTypeMetadataRecords() {
+  // Do nothing if the list is empty.
+  if (RuntimeResolvableTypes.empty())
+    return nullptr;
+
   std::string sectionName;
   switch (TargetInfo.OutputObjectFormat) {
   case llvm::Triple::MachO:
@@ -3132,33 +3232,17 @@ llvm::Constant *IRGenModule::emitTypeMetadataRecords() {
                      "the selected object format.");
   }
 
-  // Do nothing if the list is empty.
-  if (RuntimeResolvableTypes.empty())
-    return nullptr;
+  bool separately = true;
 
-  // Define the global variable for the conformance list.
-  // We have to do this before defining the initializer since the entries will
-  // contain offsets relative to themselves.
-  auto arrayTy = llvm::ArrayType::get(TypeMetadataRecordTy,
-                                      RuntimeResolvableTypes.size());
+  auto emitMetadataRecord = [&](
+                              llvm::GlobalVariable& array,
+                              NominalTypeDecl& type,
+                              unsigned idx) {
+    auto reference = getTypeEntityReference(&type);
 
-  // FIXME: This needs to be a linker-local symbol in order for Darwin ld to
-  // resolve relocations relative to it.
-  auto var = new llvm::GlobalVariable(Module, arrayTy,
-                                      /*isConstant*/ true,
-                                      llvm::GlobalValue::PrivateLinkage,
-                                      /*initializer*/ nullptr,
-                                      "\x01l_type_metadata_table");
-
-  SmallVector<llvm::Constant *, 8> elts;
-  for (auto type : RuntimeResolvableTypes) {
-    auto ref = getTypeEntityReference(type);
-
-    // Form the relative address, with the type reference kind in the low bits.
-    unsigned arrayIdx = elts.size();
     llvm::Constant *relativeAddr =
-      emitDirectRelativeReference(ref.getValue(), var, { arrayIdx, 0 });
-    unsigned lowBits = static_cast<unsigned>(ref.getKind());
+      emitDirectRelativeReference(reference.getValue(), &array, { idx, 0 });
+    unsigned lowBits = static_cast<unsigned>(reference.getKind());
     if (lowBits != 0) {
       relativeAddr = llvm::ConstantExpr::getAdd(relativeAddr,
                        llvm::ConstantInt::get(RelativeAddressTy, lowBits));
@@ -3167,19 +3251,66 @@ llvm::Constant *IRGenModule::emitTypeMetadataRecords() {
     llvm::Constant *recordFields[] = { relativeAddr };
     auto record = llvm::ConstantStruct::get(TypeMetadataRecordTy,
                                             recordFields);
-    elts.push_back(record);
+    return record;
+  };
+
+
+  if (!separately) {
+    // Define the global variable for the conformance list.
+    // We have to do this before defining the initializer since the entries will
+    // contain offsets relative to themselves.
+    auto arrayTy = llvm::ArrayType::get(TypeMetadataRecordTy,
+                                        RuntimeResolvableTypes.size());
+    // FIXME: This needs to be a linker-local symbol in order for Darwin ld to
+    // resolve relocations relative to it.
+    auto array = new llvm::GlobalVariable(Module, arrayTy,
+                                        /*isConstant*/ true,
+                                        llvm::GlobalValue::PrivateLinkage,
+                                        /*initializer*/ nullptr,
+                                        "\x01l_type_metadata_table");
+
+    SmallVector<llvm::Constant *, 8> elts;
+    for (auto type : RuntimeResolvableTypes) {
+      elts.push_back(emitMetadataRecord(*array, *type, elts.size()));
+    }
+
+    auto initializer = llvm::ConstantArray::get(arrayTy, elts);
+
+    array->setInitializer(initializer);
+    array->setSection(sectionName);
+    array->setAlignment(4);
+
+    disableAddressSanitizer(*this, array);
+    addUsedGlobal(array);
+    return array;
+  } else {
+    for (auto type : RuntimeResolvableTypes) {
+      auto arrayTy = llvm::ArrayType::get(TypeMetadataRecordTy, 1);
+      auto linkEntity = LinkEntity::forNominalTypeDescriptor(type);
+      auto mangledName = linkEntity.mangleAsString();
+      auto array = new llvm::GlobalVariable(Module, arrayTy,
+                                          /*isConstant*/ true,
+                                          llvm::GlobalValue::PrivateLinkage,
+                                          /*initializer*/ nullptr,
+                                          "\x01l_type_metadata_table_" + mangledName);
+      SmallVector<llvm::Constant *, 8> elts;
+      elts.push_back(emitMetadataRecord(*array, *type, 0));
+
+      if (auto comdat = tryGetOrCreateComdatForLinkEntity(*this, linkEntity)) {
+        array->setComdat(comdat);
+        array->setSection(sectionName + "." + mangledName);
+      } else {
+        array->setSection(sectionName);
+      }
+
+      auto initializer = llvm::ConstantArray::get(arrayTy, elts);
+
+      array->setInitializer(initializer);
+      disableAddressSanitizer(*this, array);
+      addUsedGlobal(array);
+    }
+    return nullptr;
   }
-
-  auto initializer = llvm::ConstantArray::get(arrayTy, elts);
-
-  var->setInitializer(initializer);
-  var->setSection(sectionName);
-  var->setAlignment(4);
-
-  disableAddressSanitizer(*this, var);
-  
-  addUsedGlobal(var);
-  return var;
 }
 
 llvm::Constant *IRGenModule::emitFieldDescriptors() {
