@@ -122,7 +122,7 @@ class StdlibDeploymentTarget(object):
         "s390x"])
 
     BareMetal = Platform("baremetal",
-                         archs=["armv7m"],
+                         archs=["thumbv7m"],
                          sdk_name="BAREMETAL")
 
     FreeBSD = Platform("freebsd", archs=["x86_64"])
