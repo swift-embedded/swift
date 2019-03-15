@@ -269,7 +269,9 @@ endif()
 
 list(APPEND swift_stdlib_compile_flags "-Xllvm" "-sil-inline-generics")
 list(APPEND swift_stdlib_compile_flags "-Xllvm" "-sil-partial-specialization")
-if(SWIFT_STDLIB_ENABLE_STDLIBCORE_EXCLUSIVITY_CHECKING)
+if(SWIFT_PRIMARY_VARIANT_SDK STREQUAL BAREMETAL)
+  list(APPEND swift_stdlib_compile_flags "-enforce-exclusivity=none")
+elseif(SWIFT_STDLIB_ENABLE_STDLIBCORE_EXCLUSIVITY_CHECKING)
   list(APPEND swift_stdlib_compile_flags "-enforce-exclusivity=checked")
 endif()
 

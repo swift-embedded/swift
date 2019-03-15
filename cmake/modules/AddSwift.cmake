@@ -359,6 +359,8 @@ function(_add_variant_swift_compile_flags
 
   if("${sdk}" STREQUAL "BAREMETAL")
     list(APPEND result "-Xcc" "-D_BAREMETAL" "-Xfrontend" "-disable-reflection-metadata")
+    list(APPEND result "-Xfrontend" "-assume-single-threaded")
+    list(APPEND result "-enforce-exclusivity=none")
   endif()
 
   if(NOT BUILD_STANDALONE)
