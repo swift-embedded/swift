@@ -262,7 +262,7 @@ macro(configure_sdk_baremetal prefix name architectures toolchain_path)
 
   foreach(arch ${architectures})
     set(SWIFT_SDK_${prefix}_ARCH_${arch}_PATH "${toolchain_path}")
-    set(SWIFT_SDK_${prefix}_ARCH_${arch}_TRIPLE "armv7m-none-eabi")
+    set(SWIFT_SDK_${prefix}_ARCH_${arch}_TRIPLE "thumbv7m-none-eabi")
     set(SWIFT_SDK_${prefix}_ARCH_${arch}_LINKER "${toolchain_path}/bin/ld")
   endforeach()
 

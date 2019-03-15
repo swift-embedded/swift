@@ -752,9 +752,9 @@ endif()
 
 is_sdk_requested(BAREMETAL swift_build_baremetal)
 if(swift_build_baremetal)
-  configure_sdk_baremetal(BAREMETAL "BareMetal" "armv7m" "${SWIFT_BAREMETAL_TOOLCHAIN_PATH}")
+  configure_sdk_baremetal(BAREMETAL "BareMetal" "thumbv7m" "${SWIFT_BAREMETAL_TOOLCHAIN_PATH}")
   set(SWIFT_PRIMARY_VARIANT_SDK_default "BAREMETAL")
-  set(SWIFT_PRIMARY_VARIANT_ARCH_default "armv7m")
+  set(SWIFT_PRIMARY_VARIANT_ARCH_default "thumbv7m")
 endif()
 
 if("${SWIFT_PRIMARY_VARIANT_SDK}" STREQUAL "")
