@@ -76,27 +76,13 @@ EOF
 }
 
 
-function write_baremetal_linkfile {
+function write_empty_linkfile {
     if [ -z "${OUTPUTFILE}" ]; then
-        echo $0: No outputfile specified
+        echo "$0: No outputfile specified"
         exit 1
     fi
-    cat >$OUTPUTFILE <<EOF
+    cat "$OUTPUTFILE" <<EOF
 -nostdlib
--lswiftCore
--Xlinker
---start-group
--lc
--lgcc
--lsupc++
--lstdc++
--lnosys
--Xlinker
---end-group
--Xlinker
---exclude-libs
--Xlinker
-ALL
 EOF
 }
 
@@ -108,7 +94,7 @@ else
 fi
 
 if [ "$SDK" == "BAREMETAL" ]; then
-    write_baremetal_linkfile
+    write_empty_linkfile
 else
     write_linkfile
 fi
