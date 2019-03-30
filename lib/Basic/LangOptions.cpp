@@ -39,6 +39,7 @@ static const StringRef SupportedConditionalCompilationOSs[] = {
   "PS4",
   "Cygwin",
   "Haiku",
+  "None",
 };
 
 static const StringRef SupportedConditionalCompilationArches[] = {
