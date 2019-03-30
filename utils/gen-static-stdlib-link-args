@@ -81,7 +81,7 @@ function write_empty_linkfile {
         echo "$0: No outputfile specified"
         exit 1
     fi
-    cat "$OUTPUTFILE" <<EOF
+    cat > "$OUTPUTFILE" <<EOF
 -nostdlib
 EOF
 }
