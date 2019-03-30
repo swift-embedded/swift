@@ -210,9 +210,14 @@ toolchains::GenericUnix::constructInvocation(const LinkJobAction &job,
 
   SmallString<128> SharedRuntimeLibPath;
   getRuntimeLibraryPath(SharedRuntimeLibPath, context.Args, /*Shared=*/true);
+  SmallString<128> SharedRuntimeArchLibPath(SharedRuntimeLibPath);
+  llvm::sys::path::append(SharedRuntimeArchLibPath, getTriple().getArchName());
 
   SmallString<128> StaticRuntimeLibPath;
   getRuntimeLibraryPath(StaticRuntimeLibPath, context.Args, /*Shared=*/false);
+  SmallString<128> StaticRuntimeArchLibPath(StaticRuntimeLibPath);
+  llvm::sys::path::append(StaticRuntimeArchLibPath, getTriple().getArchName());
+
 
   // Add the runtime library link path, which is platform-specific and found
   // relative to the compiler.
@@ -261,7 +266,7 @@ toolchains::GenericUnix::constructInvocation(const LinkJobAction &job,
   Arguments.push_back("-L");
 
   if (staticExecutable) {
-    Arguments.push_back(context.Args.MakeArgString(StaticRuntimeLibPath));
+    Arguments.push_back(context.Args.MakeArgString(StaticRuntimeArchLibPath));
 
     SmallString<128> linkFilePath = StaticRuntimeLibPath;
     llvm::sys::path::append(linkFilePath, "static-executable-args.lnk");
@@ -274,7 +279,7 @@ toolchains::GenericUnix::constructInvocation(const LinkJobAction &job,
           "-static-executable not supported on this platform");
     }
   } else if (staticStdlib) {
-    Arguments.push_back(context.Args.MakeArgString(StaticRuntimeLibPath));
+    Arguments.push_back(context.Args.MakeArgString(StaticRuntimeArchLibPath));
 
     SmallString<128> linkFilePath = StaticRuntimeLibPath;
     llvm::sys::path::append(linkFilePath, "static-stdlib-args.lnk");
@@ -285,7 +290,7 @@ toolchains::GenericUnix::constructInvocation(const LinkJobAction &job,
       llvm::report_fatal_error(linkFile + " not found");
     }
   } else {
-    Arguments.push_back(context.Args.MakeArgString(SharedRuntimeLibPath));
+    Arguments.push_back(context.Args.MakeArgString(SharedRuntimeArchLibPath));
     Arguments.push_back("-lswiftCore");
   }
 
