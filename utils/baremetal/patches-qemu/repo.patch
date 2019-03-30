@@ -29,9 +29,9 @@ index 6c69ce79b2..c9eb745b00 100644
 +    flash_size = ((board->dc0 & 0xffff) + 1) * 1024;
 +    sram_size = ((board->dc0 >> 16) + 1) * 1024;
 +
-+    qemu_log_mask(LOG_GUEST_ERROR,
-+                  "Flash size: %i, RAM size: %i\n",
-+                  flash_size, sram_size);
++    //qemu_log_mask(LOG_GUEST_ERROR,
++    //              "Flash size: %i, RAM size: %i\n",
++    //              flash_size, sram_size);
  
      /* Flash programming is done via the SCU, so pretend it is ROM.  */
      memory_region_init_ram(flash, NULL, "stellaris.flash", flash_size,
