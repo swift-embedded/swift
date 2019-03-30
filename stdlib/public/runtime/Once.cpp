@@ -53,7 +53,7 @@ void swift::swift_once(swift_once_t *predicate, void (*fn)(void *),
 #elif defined(__CYGWIN__)
   _swift_once_f(predicate, context, fn);
 #elif defined(_BAREMETAL)
-  if (*predicate) {
+  if (!*predicate) {
       *predicate = true;
       fn(context);
   }
