@@ -31,6 +31,11 @@ echo "Patching build scripts..."
 patch -u "$GCC_ARM_NONE_EABI_DIR/build-common.sh" "$LOCAL_DIR/patches-gcc-arm-none-eabi/build-common.patch"
 patch -u "$GCC_ARM_NONE_EABI_DIR/build-toolchain.sh" "$LOCAL_DIR/patches-gcc-arm-none-eabi/build-toolchain.patch"
 
+echo "Copying pre-downloaded dependencies..."
+mkdir -p "$GCC_ARM_NONE_EABI_DIR/src"
+cp "$LOCAL_DIR"/deps-gcc-arm-none-eabi/* "$GCC_ARM_NONE_EABI_DIR"/src
+
+echo "Building..."
 cd "$GCC_ARM_NONE_EABI_DIR"
 ./install-sources.sh
 ./build-prerequisites.sh
