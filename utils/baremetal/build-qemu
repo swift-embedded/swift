@@ -26,13 +26,23 @@ git -C "$QEMU_DIR" apply "$LOCAL_DIR/patches-qemu/repo.patch"
 echo "Building qemu..."
 mkdir "$QEMU_DIR/build"
 cd "$QEMU_DIR/build"
-../configure \
+
+if [[ "$OSTYPE" == "darwin"* ]] ; then
+  ../configure \
+      --prefix=/usr/local \
+      --cc=clang \
+      --host-cc=clang \
+      --disable-bsd-user \
+      --disable-guest-agent \
+      --extra-cflags=-DNCURSES_WIDECHAR=1 \
+      --enable-cocoa \
+      --target-list=arm-softmmu
+else
+  ../configure \
     --prefix=/usr/local \
-    --cc=clang \
-    --host-cc=clang \
     --disable-bsd-user \
     --disable-guest-agent \
-    --extra-cflags=-DNCURSES_WIDECHAR=1 \
-    --enable-cocoa \
     --target-list=arm-softmmu
+fi
+
 make
