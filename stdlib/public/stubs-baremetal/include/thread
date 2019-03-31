@@ -1,0 +1,71 @@
+#ifndef STDLIB_ADD_THREAD_H
+#define STDLIB_ADD_THREAD_H
+
+#include_next <thread>
+
+#ifdef NDEBUG
+#include <cstdlib>
+#define __notimplemented(a) abort()
+#else
+#include <cassert>
+#define __notimplemented(a) assert(a)
+#endif
+
+namespace std {
+    class thread {
+     public:
+        typedef int native_handle_type;
+
+        class id {
+          native_handle_type native;
+         public:
+            id() noexcept;
+            id(native_handle_type native) : native(native) {}
+          friend class thread;
+          friend bool operator==(thread::id __x, thread::id __y) noexcept { return __x.native == __y.native; }
+          friend bool operator<(thread::id __x, thread::id __y) noexcept { return __x.native < __y.native; }
+        };
+
+        // construct/copy/destroy:
+        thread() noexcept { __notimplemented(false && "not implemented"); }
+        template <class F, class ...Args> explicit thread(F&& f, Args&&... args) { __notimplemented(false && "not implemented"); }
+        ~thread() { }
+        thread(const thread&) = delete;
+        thread(thread&&) noexcept { __notimplemented(false && "not implemented"); }
+        thread& operator=(const thread&) = delete;
+        thread& operator=(thread&&) noexcept { __notimplemented(false && "not implemented"); }
+
+        // members:
+        void swap(thread&) noexcept { __notimplemented(false && "not implemented"); }
+        bool joinable() const noexcept { return false; }
+        void join() { __notimplemented(false && "not supported"); }
+        void detach() { }
+        id get_id() const noexcept { return id(0); }
+        native_handle_type native_handle() { return 0; }
+
+        // static members:
+        static unsigned hardware_concurrency() noexcept { return 0; }
+    };
+
+    void swap(thread& x, thread& y) noexcept;
+
+    template<class CharT, class Traits>
+    basic_ostream<CharT, Traits>& operator<<(basic_ostream<CharT, Traits>& out,
+                                            thread::id id) {
+        return out << id;
+    }
+
+    namespace this_thread {
+
+        inline thread::id get_id() noexcept { return thread::id(0); }
+        void yield() noexcept;
+        template <class Clock, class Duration>
+            void sleep_until(const chrono::time_point<Clock, Duration>& abs_time) { __notimplemented(false && "not implemented"); }
+        template <class Rep, class Period>
+            void sleep_for(const chrono::duration<Rep, Period>& rel_time) { __notimplemented(false && "not implemented"); }
+
+    }
+}
+
+
+#endif // STDLIB_ADD_THREAD_H

@@ -48,7 +48,7 @@ function(swift_baremetal_c_compile_flags var)
     "-D_POSIX_THREADS" "-D_POSIX_READER_WRITER_LOCKS" "-D_UNIX98_THREAD_MUTEX_ATTRIBUTES"
     "-fdata-sections" "-ffunction-sections"
     "-fno-rtti" "-fno-exceptions"
-    "-I/Users/alandragomirecky/Projects/cvut/masters_thesis/stdlib_add"
+    "-I${CMAKE_SOURCE_DIR}/stdlib/public/stubs-baremetal/include"
     PARENT_SCOPE)
 endfunction()
 
