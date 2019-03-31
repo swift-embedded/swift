@@ -141,10 +141,6 @@ function(_add_variant_c_compile_link_flags)
     endif()
   endif()
 
-
-  if("${CFLAGS_SDK}" STREQUAL "BAREMETAL")
-  endif()
-
   if(IS_DARWIN)
     list(APPEND result
       "-arch" "${CFLAGS_ARCH}"
