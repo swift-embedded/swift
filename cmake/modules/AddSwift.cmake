@@ -1360,6 +1360,13 @@ function(_add_swift_library_single target name)
         ${SWIFTLIB_SINGLE_PRIVATE_LINK_LIBRARIES})
   endif()
 
+  if(${SWIFTLIB_SINGLE_SDK} STREQUAL BAREMETAL AND target_static)
+    add_custom_command(
+      TARGET ${target_static} POST_BUILD
+      COMMAND arm-none-eabi-ranlib ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.a
+      VERBATIM)
+  endif()
+
   # Do not add code here.
 endfunction()
 
