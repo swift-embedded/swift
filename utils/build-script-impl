@@ -438,12 +438,18 @@ function set_build_options_for_host() {
             SWIFT_HOST_VARIANT_SDK="HAIKU"
             SWIFT_HOST_VARIANT_ARCH="x86_64"
             ;;
-        none-thumbv7m)
+        none-*)
+            [[ ${host} =~ none-(.*) ]]
+            local arch=${BASH_REMATCH[1]}
             SWIFT_HOST_VARIANT="none"
             SWIFT_HOST_VARIANT_SDK="BAREMETAL"
-            SWIFT_HOST_VARIANT_ARCH="thumbv7m"
-            SWIFT_HOST_TRIPLE="thumbv7m-none-eabi"
-            llvm_target_arch="THUMB"
+            SWIFT_HOST_VARIANT_ARCH=$arch
+            SWIFT_HOST_TRIPLE="$arch-none-eabi"
+            if [[ $arch =~ thumb.* ]] ; then
+              llvm_target_arch="THUMB"
+            else
+              llvm_target_arch="ARM"
+            fi
             ;;
         linux-*)
             SWIFT_HOST_VARIANT="linux"
@@ -1326,7 +1332,7 @@ function calculate_targets_for_host() {
                 build_for_this_target=$(not ${SKIP_BUILD_LINUX})
                 test_this_target=$(not ${SKIP_TEST_LINUX})
                 ;;
-            baremetal-thumbv7m)
+            baremetal-*)
                 swift_sdk="BAREMETAL"
                 build_for_this_target=$(not ${SKIP_BUILD_NONE_THUMBV7M})
                 test_this_target=$(not ${SKIP_TEST_BAREMETAL})
@@ -1667,8 +1673,9 @@ function common_cross_c_flags() {
         watchos-armv7k)
             echo -n " -arch armv7k -mwatchos-version-min=${DARWIN_DEPLOYMENT_VERSION_WATCHOS}"
             ;;
-        baremetal-thumbv7m)
-            echo -n " -arch thumbv7m"
+        baremetal-*)
+            [[ $1 =~ baremetal-(.*) ]]
+            echo -n " -arch ${BASH_REMATCH[1]}"
             ;;
         android-armv7)
             echo -n " -arch armv7"

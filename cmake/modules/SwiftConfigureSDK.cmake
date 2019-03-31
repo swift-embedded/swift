@@ -261,8 +261,16 @@ macro(configure_sdk_baremetal prefix name architectures toolchain_path)
   set(SWIFT_SDK_${prefix}_OBJECT_FORMAT "ELF")
 
   foreach(arch ${architectures})
+    if(${arch} STREQUAL thumbv7m)
+      set(SWIFT_SDK_${prefix}_ARCH_${arch}_ALT_SPELLING armv7-m)
+    elseif(${arch} STREQUAL thumbv7em)
+      set(SWIFT_SDK_${prefix}_ARCH_${arch}_ALT_SPELLING armv7e-m)
+    else()
+      message(FATAL_ERROR "unknown architecture ${arch}")
+    endif()
+
+    set(SWIFT_SDK_${prefix}_ARCH_${arch}_TRIPLE "${arch}-unknown-none-eabi")
     set(SWIFT_SDK_${prefix}_ARCH_${arch}_PATH "${toolchain_path}")
-    set(SWIFT_SDK_${prefix}_ARCH_${arch}_TRIPLE "thumbv7m-none-eabi")
     set(SWIFT_SDK_${prefix}_ARCH_${arch}_LINKER "${toolchain_path}/bin/ld")
   endforeach()
 
