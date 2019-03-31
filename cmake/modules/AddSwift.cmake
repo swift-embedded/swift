@@ -1553,8 +1553,12 @@ endfunction()
 # SWIFT_MODULE_DEPENDS_CYGWIN
 #   Swift modules this library depends on when built for Cygwin.
 #
-# SWIFT_MODULE_DEPENDS_HAIKU
-#   Swift modules this library depends on when built for Haiku.
+# swift_module_depends_haiku
+#   swift modules this library depends on when built for haiku.
+#
+# SWIFT_MODULE_DEPENDS_BAREMETAL
+#   Swift modules this library depends on when built
+#   for running without OS (baremetal).
 #
 # FRAMEWORK_DEPENDS
 #   System frameworks this library depends on.
@@ -1667,6 +1671,7 @@ function(add_swift_target_library name)
         SWIFT_MODULE_DEPENDS_OSX
         SWIFT_MODULE_DEPENDS_TVOS
         SWIFT_MODULE_DEPENDS_WATCHOS
+        SWIFT_MODULE_DEPENDS_BAREMETAL
         TARGET_SDKS)
 
   cmake_parse_arguments(SWIFTLIB
@@ -1790,6 +1795,9 @@ function(add_swift_target_library name)
     elseif(${sdk} STREQUAL HAIKU)
       list(APPEND swiftlib_module_depends_flattened
            ${SWIFTLIB_SWIFT_MODULE_DEPENDS_HAIKU})
+    elseif(${sdk} STREQUAL BAREMETAL)
+      list(APPEND swiftlib_module_depends_flattened
+           ${SWIFTLIB_SWIFT_MODULE_DEPENDS_BAREMETAL})
     endif()
 
     # Collect architecture agnostic SDK framework dependencies
