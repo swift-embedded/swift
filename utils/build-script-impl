@@ -1334,7 +1334,7 @@ function calculate_targets_for_host() {
                 ;;
             baremetal-*)
                 swift_sdk="BAREMETAL"
-                build_for_this_target=$(not ${SKIP_BUILD_NONE_THUMBV7M})
+                build_for_this_target=$(not ${SKIP_BUILD_BAREMETAL})
                 test_this_target=$(not ${SKIP_TEST_BAREMETAL})
                 ;;
             freebsd-*)
