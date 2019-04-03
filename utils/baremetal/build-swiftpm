@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+LOCAL_DIR="$(cd "$(dirname "$0")" && pwd)"
+SWIFT_PATH="$( cd "$(dirname "$0")/../../.." && pwd )"
+
+"$SWIFT_PATH"/swift/utils/build-script \
+  --skip-build-benchmarks 1 \
+  --stdlib-deployment-targets macosx-x86_64 \
+  --no-swift-stdlib-assertions \
+  --build-swift-static-sdk-overlay \
+  --release \
+  --reconfigure \
+  --llbuild \
+  --swiftpm
