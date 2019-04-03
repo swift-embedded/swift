@@ -22,7 +22,7 @@ add_swift_target_library(swiftGlibc ${SWIFT_STDLIB_LIBRARY_BUILD_TYPES} IS_SDK_O
 
     SWIFT_COMPILE_FLAGS "${SWIFT_RUNTIME_SWIFT_COMPILE_FLAGS}"
     LINK_FLAGS "${SWIFT_RUNTIME_SWIFT_LINK_FLAGS}"
-    TARGET_SDKS ANDROID CYGWIN FREEBSD LINUX HAIKU
+    TARGET_SDKS ANDROID CYGWIN FREEBSD LINUX HAIKU BAREMETAL
     DEPENDS glibc_modulemap)
 
 add_swift_target_library(swiftMSVCRT ${SWIFT_STDLIB_LIBRARY_BUILD_TYPES} IS_SDK_OVERLAY
@@ -39,7 +39,8 @@ foreach(sdk ${SWIFT_SDKS})
      NOT "${sdk}" STREQUAL "FREEBSD" AND
      NOT "${sdk}" STREQUAL "ANDROID" AND
      NOT "${sdk}" STREQUAL "CYGWIN" AND
-     NOT "${sdk}" STREQUAL "HAIKU")
+     NOT "${sdk}" STREQUAL "HAIKU" AND
+     NOT "${sdk}" STREQUAL "BAREMETAL")
     continue()
   endif()
 
@@ -56,6 +57,9 @@ foreach(sdk ${SWIFT_SDKS})
     elseif("${sdk}" STREQUAL "ANDROID")
       set(GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH "${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include")
       set(GLIBC_SYSROOT_RELATIVE_ARCH_INCLUDE_PATH "${SWIFT_ANDROID_NDK_PATH}/sysroot/usr/include")
+    elseif("${sdk}" STREQUAL "BAREMETAL")
+      set(GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH "${SWIFT_BAREMETAL_TOOLCHAIN_PATH}/arm-none-eabi/include")
+      set(GLIBC_SYSROOT_RELATIVE_ARCH_INCLUDE_PATH "${SWIFT_BAREMETAL_TOOLCHAIN_PATH}/arm-none-eabi/include")
     else()
       # Determine the location of glibc headers based on the target.
       set(GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH "/usr/include")
@@ -70,7 +74,8 @@ foreach(sdk ${SWIFT_SDKS})
     set(GLIBC_INCLUDE_PATH "${GLIBC_SYSROOT_RELATIVE_INCLUDE_PATH}")
     set(GLIBC_ARCH_INCLUDE_PATH "${GLIBC_SYSROOT_RELATIVE_ARCH_INCLUDE_PATH}")
 
-    if(NOT "${SWIFT_SDK_${sdk}_ARCH_${arch}_PATH}" STREQUAL "/" AND NOT "${sdk}" STREQUAL "ANDROID")
+    if(NOT "${SWIFT_SDK_${sdk}_ARCH_${arch}_PATH}" STREQUAL "/"
+       AND NOT "${sdk}" STREQUAL "ANDROID" AND NOT "${sdk}" STREQUAL "BAREMETAL")
       set(GLIBC_INCLUDE_PATH "${SWIFT_SDK_${sdk}_ARCH_${arch}_PATH}${GLIBC_INCLUDE_PATH}")
       set(GLIBC_ARCH_INCLUDE_PATH "${SWIFT_SDK_${sdk}_ARCH_${arch}_PATH}${GLIBC_ARCH_INCLUDE_PATH}")
     endif()

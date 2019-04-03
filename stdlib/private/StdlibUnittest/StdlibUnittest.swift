@@ -12,8 +12,10 @@
 
 
 import SwiftPrivate
+#if !os(None)
 import SwiftPrivatePthreadExtras
 import SwiftPrivateLibcExtras
+#endif
 
 #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
 import Darwin
@@ -694,7 +696,11 @@ public func expectCrash(withMessage message: String = "", executing: () -> Void)
 }
 
 func _defaultTestSuiteFailedCallback() {
+#if !os(None)
   abort()
+#else
+  fatalError("test-suite failed")
+#endif
 }
 
 var _testSuiteFailedCallback: () -> Void = _defaultTestSuiteFailedCallback
@@ -704,7 +710,11 @@ public func _setTestSuiteFailedCallback(_ callback: @escaping () -> Void) {
 }
 
 func _defaultTrappingExpectationFailedCallback() {
+#if !os(None)
   abort()
+#else
+  fatalError("test-suite trap")
+#endif
 }
 
 var _trappingExpectationFailedCallback: () -> Void
@@ -714,6 +724,7 @@ public func _setTrappingExpectationFailedCallback(callback: @escaping () -> Void
   _trappingExpectationFailedCallback = callback
 }
 
+#if !os(None)
 extension ProcessTerminationStatus {
   var isSwiftTrap: Bool {
     switch self {
@@ -728,33 +739,19 @@ extension ProcessTerminationStatus {
     }
   }
 }
-
-func _stdlib_getline() -> String? {
-  var result: [UInt8] = []
-  while true {
-    let c = getchar()
-    if c == EOF {
-      if result.isEmpty {
-        return nil
-      }
-      return String(decoding: result, as: UTF8.self)
-    }
-    if c == CInt(Unicode.Scalar("\n").value) {
-      return String(decoding: result, as: UTF8.self)
-    }
-    result.append(UInt8(c))
-  }
-}
+#endif
 
 func _printDebuggingAdvice(_ fullTestName: String) {
   print("To debug, run:")
   var invocation = [CommandLine.arguments[0]]
+#if !os(None)
   let interpreter = getenv("SWIFT_INTERPRETER")
   if interpreter != nil {
     if let interpreterCmd = String(validatingUTF8: interpreter!) {
         invocation.insert(interpreterCmd, at: 0)
     }
   }
+#endif
   print("$ \(invocation.joined(separator: " ")) " +
     "--stdlib-unittest-in-process --stdlib-unittest-filter \"\(fullTestName)\"")
 }
@@ -773,6 +770,25 @@ func _installTrapInterceptor()
   @objc optional var name: AnyObject { get }
 }
 #endif
+
+#if !os(None)
+
+func _stdlib_getline() -> String? {
+  var result: [UInt8] = []
+  while true {
+    let c = getchar()
+    if c == EOF {
+      if result.isEmpty {
+        return nil
+      }
+      return String(decoding: result, as: UTF8.self)
+    }
+    if c == CInt(Unicode.Scalar("\n").value) {
+      return String(decoding: result, as: UTF8.self)
+    }
+    result.append(UInt8(c))
+  }
+}
 
 // Avoid serializing references to objc_setUncaughtExceptionHandler in SIL.
 @inline(never)
@@ -828,23 +844,30 @@ func _childProcess() {
     }
   }
 }
+#endif
 
 struct _ParentProcess {
+#if !os(None)
   internal var _pid: pid_t?
   internal var _childStdin: _FDOutputStream = _FDOutputStream(fd: -1)
   internal var _childStdout: _FDInputStream = _FDInputStream(fd: -1)
   internal var _childStderr: _FDInputStream = _FDInputStream(fd: -1)
+#endif
 
   internal var _runTestsInProcess: Bool
   internal var _filter: String?
   internal var _args: [String]
 
   init(runTestsInProcess: Bool, args: [String], filter: String?) {
+#if os(None)
+    precondition(runTestsInProcess == true, "only in-process testing supported")
+#endif
     self._runTestsInProcess = runTestsInProcess
     self._filter = filter
     self._args = args
   }
 
+#if !os(None)
   mutating func _spawnChild() {
     let params = ["--stdlib-unittest-run-child"] + _args
     let (pid, childStdinFD, childStdoutFD, childStderrFD) = spawnChild(params)
@@ -1078,6 +1101,8 @@ struct _ParentProcess {
     }
   }
 
+#endif /* !os(None) */
+
   internal enum _TestStatus {
     case skip([TestRunPredicate])
     case pass
@@ -1103,7 +1128,9 @@ struct _ParentProcess {
     print("[ RUN      ] \(fullTestName)\(activeXFailsText)")
 
     var expectCrash = false
+#if !os(None)
     var childTerminationStatus: ProcessTerminationStatus?
+#endif
     var crashStdout: [Substring] = []
     var crashStderr: [Substring] = []
     if _runTestsInProcess {
@@ -1115,13 +1142,18 @@ struct _ParentProcess {
         testSuite._runTest(name: t.name, parameter: testParameter)
       }
     } else {
+#if !os(None)
       (_anyExpectFailed, expectCrash, childTerminationStatus, crashStdout,
        crashStderr) =
         _runTestInChild(testSuite, t.name, parameter: testParameter)
+#else
+      fatalError("running tests in a child not supported")
+#endif
     }
 
     // Determine if the test passed, not taking XFAILs into account.
     var testPassed = false
+#if !os(None)
     switch (childTerminationStatus, expectCrash) {
     case (.none, false):
       testPassed = !_anyExpectFailed
@@ -1137,6 +1169,9 @@ struct _ParentProcess {
     case (.some, true):
       testPassed = !_anyExpectFailed
     }
+#else
+    testPassed = !_anyExpectFailed
+#endif
     if testPassed && t.crashOutputMatches.count > 0 {
       // If we still think that the test passed, check if the crash
       // output matches our expectations.
@@ -1237,11 +1272,13 @@ struct _ParentProcess {
         print("\(testSuite.name): All tests passed")
       }
     }
+#if !os(None)
     let (failed: failedOnShutdown, ()) = _shutdownChild()
     if failedOnShutdown {
       print("The child process failed during shutdown, aborting.")
       _testSuiteFailedCallback()
     }
+#endif
   }
 }
 
@@ -1257,6 +1294,7 @@ struct PersistentState {
   static func complainIfNothingRuns() {
     if !complaintInstalled {
       complaintInstalled = true
+#if !os(None)
       atexit {
         if !PersistentState.ranSomething {
           print("Ran no tests and runNoTests() was not called. Aborting. ")
@@ -1264,6 +1302,7 @@ struct PersistentState {
           _testSuiteFailedCallback()
         }
       }
+#endif
     }
   }
 }
@@ -1309,13 +1348,21 @@ public func runAllTests() {
     CommandLine.arguments.contains("--stdlib-unittest-run-child")
 
   if _isChildProcess {
+#if !os(None)
     _childProcess()
+#else
+    fatalError("running tests in child process not supported")
+#endif
   } else {
     var runTestsInProcess: Bool = false
     var filter: String?
     var args = [String]()
     var i = 0
     i += 1 // Skip the name of the executable.
+#if os(None)
+    // We have no support for processes on baremetal
+    runTestsInProcess = true
+#endif
     while i < CommandLine.arguments.count {
       let arg = CommandLine.arguments[i]
       if arg == "--stdlib-unittest-in-process" {
@@ -1596,6 +1643,7 @@ public enum OSVersion : CustomStringConvertible {
   case windowsCygnus
   case windows
   case haiku
+  case none
 
   public var description: String {
     switch self {
@@ -1627,6 +1675,8 @@ public enum OSVersion : CustomStringConvertible {
       return "Windows"
     case .haiku:
       return "Haiku"
+    case .none:
+      return "None"
     }
   }
 }
@@ -1671,6 +1721,8 @@ func _getOSVersion() -> OSVersion {
   return .windows
 #elseif os(Haiku)
   return .haiku
+#elseif os(None)
+  return .none
 #else
   let productVersion = _getSystemVersionPlistProperty("ProductVersion")!
   let (major, minor, bugFix) = _parseDottedVersionTriple(productVersion)
@@ -1754,6 +1806,8 @@ public enum TestRunPredicate : CustomStringConvertible {
   case windowsCygnusAny(reason: String)
 
   case haikuAny(reason: String)
+
+  case baremetalAny(reason: String)
 
   case objCRuntime(/*reason:*/ String)
   case nativeRuntime(/*reason:*/ String)
@@ -1849,6 +1903,9 @@ public enum TestRunPredicate : CustomStringConvertible {
 
     case .haikuAny(reason: let reason):
       return "haikuAny(*, reason: \(reason))"
+
+    case .baremetalAny(reason: let reason):
+      return "baremetalAny(*, reason: \(reason))"
 
     case .objCRuntime(let reason):
       return "Objective-C runtime, reason: \(reason))"
@@ -2136,6 +2193,14 @@ public enum TestRunPredicate : CustomStringConvertible {
     case .haikuAny:
       switch _getRunningOSVersion() {
       case .haiku:
+        return true
+      default:
+        return false
+      }
+
+    case .baremetalAny:
+      switch _getRunningOSVersion() {
+      case .none:
         return true
       default:
         return false

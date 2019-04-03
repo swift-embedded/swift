@@ -17,6 +17,11 @@
 
 #include "swift/Runtime/Config.h"
 
+#if defined(_BAREMETAL)
+extern void _exit(int code);
+extern int _write (int fd, const char *buf, size_t count);
+#endif
+
 static void CrashCatcher(int Sig) {
   const char *Msg;
   switch (Sig) {
@@ -29,7 +34,11 @@ static void CrashCatcher(int Sig) {
     case SIGSYS:  Msg = "CRASHED: SIGSYS\n";  break;
     default:      Msg = "CRASHED: SIG????\n"; break;
   }
+#if defined(_BAREMETAL)
+  _write(0, Msg, strlen(Msg));
+#else
   write(STDERR_FILENO, Msg, strlen(Msg));
+#endif
   _exit(0);
 }
 

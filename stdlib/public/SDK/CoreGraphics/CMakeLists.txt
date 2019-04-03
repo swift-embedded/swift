@@ -8,6 +8,7 @@ add_swift_target_library(swiftCoreGraphics ${SWIFT_SDK_OVERLAY_LIBRARY_BUILD_TYP
 
   SWIFT_COMPILE_FLAGS "${SWIFT_RUNTIME_SWIFT_COMPILE_FLAGS}"
   LINK_FLAGS "${SWIFT_RUNTIME_SWIFT_LINK_FLAGS}"
+  TARGET_SDKS OSX IOS IOS_SIMULATOR TVOS TVOS_SIMULATOR WATCHOS WATCHOS_SIMULATOR
   SWIFT_MODULE_DEPENDS_OSX Darwin CoreFoundation Dispatch IOKit ObjectiveC # auto-updated
   SWIFT_MODULE_DEPENDS_IOS Darwin CoreFoundation Dispatch ObjectiveC # auto-updated
   SWIFT_MODULE_DEPENDS_TVOS Darwin CoreFoundation Dispatch ObjectiveC # auto-updated

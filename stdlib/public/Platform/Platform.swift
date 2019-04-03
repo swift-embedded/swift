@@ -348,6 +348,8 @@ public var SIG_IGN: _crt_signal_t {
 public var SIG_ERR: _crt_signal_t {
   return unsafeBitCast(-1, to: _crt_signal_t.self)
 }
+#elseif os(None)
+// signals not available
 #else
 internal var _ignore = _UnsupportedPlatformError()
 #endif
@@ -365,6 +367,8 @@ public var SEM_FAILED: UnsafeMutablePointer<sem_t>? {
 #elseif os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || os(Cygwin) || os(Haiku)
   // The value is ABI.  Value verified to be correct on Glibc.
   return UnsafeMutablePointer<sem_t>(bitPattern: 0)
+#elseif os(None)
+  return nil
 #else
   _UnsupportedPlatformError()
 #endif

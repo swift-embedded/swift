@@ -11,7 +11,9 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftPrivate
+#if !os(None)
 import SwiftPrivateLibcExtras
+#endif
 #if os(macOS) || os(iOS)
 import Darwin
 #elseif os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || os(Cygwin) || os(Haiku)
@@ -83,6 +85,7 @@ public func createTemporaryFile(
 #else
   var fileName = fileNamePrefix + "XXXXXX" + fileNameSuffix
 #endif
+#if !os(None)
   let fd = _stdlib_mkstemps(
     &fileName, CInt(fileNameSuffix.utf8.count))
   if fd < 0 {
@@ -94,6 +97,9 @@ public func createTemporaryFile(
     fatalError("close() return an error")
   }
   return fileName
+#else
+  fatalError("createTemporaryFile() not support")
+#endif
 }
 
 public final class Box<T> {

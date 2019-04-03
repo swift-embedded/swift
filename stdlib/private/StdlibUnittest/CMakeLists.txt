@@ -33,16 +33,17 @@ add_swift_target_library(swiftStdlibUnittest ${SWIFT_STDLIB_LIBRARY_BUILD_TYPES}
   TypeIndexed.swift
   GetOSVersion.mm
 
-  SWIFT_MODULE_DEPENDS SwiftPrivate SwiftPrivatePthreadExtras SwiftPrivateLibcExtras
-  SWIFT_MODULE_DEPENDS_IOS Darwin Foundation
-  SWIFT_MODULE_DEPENDS_OSX Darwin Foundation
-  SWIFT_MODULE_DEPENDS_TVOS Darwin Foundation
-  SWIFT_MODULE_DEPENDS_WATCHOS Darwin Foundation
-  SWIFT_MODULE_DEPENDS_LINUX Glibc
-  SWIFT_MODULE_DEPENDS_FREEBSD Glibc
-  SWIFT_MODULE_DEPENDS_CYGWIN Glibc
-  SWIFT_MODULE_DEPENDS_HAIKU Glibc
+  SWIFT_MODULE_DEPENDS SwiftPrivate
+  SWIFT_MODULE_DEPENDS_IOS Darwin Foundation SwiftPrivatePthreadExtras SwiftPrivateLibcExtras
+  SWIFT_MODULE_DEPENDS_OSX Darwin Foundation SwiftPrivatePthreadExtras SwiftPrivateLibcExtras
+  SWIFT_MODULE_DEPENDS_TVOS Darwin Foundation SwiftPrivatePthreadExtras SwiftPrivateLibcExtras
+  SWIFT_MODULE_DEPENDS_WATCHOS Darwin Foundation SwiftPrivatePthreadExtras SwiftPrivateLibcExtras
+  SWIFT_MODULE_DEPENDS_LINUX Glibc SwiftPrivatePthreadExtras SwiftPrivateLibcExtras
+  SWIFT_MODULE_DEPENDS_FREEBSD Glibc SwiftPrivatePthreadExtras SwiftPrivateLibcExtras
+  SWIFT_MODULE_DEPENDS_CYGWIN Glibc SwiftPrivatePthreadExtras SwiftPrivateLibcExtras
+  SWIFT_MODULE_DEPENDS_HAIKU Glibc SwiftPrivatePthreadExtras SwiftPrivateLibcExtras
+  SWIFT_MODULE_DEPENDS_BAREMETAL Glibc
   SWIFT_COMPILE_FLAGS ${swift_stdlib_unittest_compile_flags}
-  TARGET_SDKS ALL_POSIX_PLATFORMS
+  TARGET_SDKS ALL_POSIX_PLATFORMS BAREMETAL
   INSTALL_IN_COMPONENT stdlib-experimental)
 
