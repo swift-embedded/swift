@@ -89,10 +89,12 @@ module SwiftGlibc [system] {
       export *
     }
 
+% if CMAKE_SDK != "BAREMETAL":
     module fenv {
       header "${GLIBC_INCLUDE_PATH}/fenv.h"
       export *
     }
+% end
 
     // note: supplied by compiler
     // module float {
@@ -308,6 +310,7 @@ module SwiftGlibc [system] {
       export *
     }
 % end
+% if CMAKE_SDK != "BAREMETAL":
     module arpa {
       module inet {
         header "${GLIBC_INCLUDE_PATH}/arpa/inet.h"
@@ -315,6 +318,8 @@ module SwiftGlibc [system] {
       }
       export *
     }
+% end
+% if CMAKE_SDK != "BAREMETAL":
     module dirent {
       header "${GLIBC_INCLUDE_PATH}/dirent.h"
       export *
@@ -323,6 +328,7 @@ module SwiftGlibc [system] {
       header "${GLIBC_INCLUDE_PATH}/dlfcn.h"
       export *
     }
+% end
     module fcntl {
       header "${GLIBC_INCLUDE_PATH}/fcntl.h"
       export *
@@ -335,14 +341,17 @@ module SwiftGlibc [system] {
       header "${GLIBC_INCLUDE_PATH}/grp.h"
       export *
     }
+% if CMAKE_SDK != "BAREMETAL":
     module ioctl {
       header "${GLIBC_ARCH_INCLUDE_PATH}/sys/ioctl.h"
       export *
     }
+% end
     module libgen {
       header "${GLIBC_INCLUDE_PATH}/libgen.h"
       export *
     }
+% if CMAKE_SDK != "BAREMETAL":
     module net {
       module if {
         header "${GLIBC_INCLUDE_PATH}/net/if.h"
@@ -365,6 +374,7 @@ module SwiftGlibc [system] {
       header "${GLIBC_INCLUDE_PATH}/poll.h"
       export *
     }
+% end
     module pthread {
       header "${GLIBC_INCLUDE_PATH}/pthread.h"
       export *
@@ -381,10 +391,12 @@ module SwiftGlibc [system] {
       header "${GLIBC_INCLUDE_PATH}/sched.h"
       export *
     }
+% if CMAKE_SDK != "BAREMETAL":
     module semaphore {
       header "${GLIBC_INCLUDE_PATH}/semaphore.h"
       export *
     }
+% end
     module strings {
       header "${GLIBC_INCLUDE_PATH}/strings.h"
       export *
@@ -414,6 +426,7 @@ module SwiftGlibc [system] {
       }
 % end
 
+% if CMAKE_SDK != "BAREMETAL":
       module ipc {
         header "${GLIBC_ARCH_INCLUDE_PATH}/sys/ipc.h"
         export *
@@ -430,20 +443,23 @@ module SwiftGlibc [system] {
         header "${GLIBC_ARCH_INCLUDE_PATH}/sys/resource.h"
         export *
       }
+% end
       module select {
         header "${GLIBC_ARCH_INCLUDE_PATH}/sys/select.h"
         export *
       }
-% if CMAKE_SDK != "FREEBSD" and CMAKE_SDK != "HAIKU":
+% if CMAKE_SDK != "FREEBSD" and CMAKE_SDK != "HAIKU" and CMAKE_SDK != "BAREMETAL":
       module sendfile {
         header "${GLIBC_ARCH_INCLUDE_PATH}/sys/sendfile.h"
         export *
       }
 % end
+% if CMAKE_SDK != "BAREMETAL":
       module socket {
         header "${GLIBC_ARCH_INCLUDE_PATH}/sys/socket.h"
         export *
       }
+% end
       module stat {
         header "${GLIBC_ARCH_INCLUDE_PATH}/sys/stat.h"
         export *
@@ -466,6 +482,7 @@ module SwiftGlibc [system] {
         export *
       }
 % end
+% if CMAKE_SDK != "BAREMETAL":
       module uio {
         header "${GLIBC_ARCH_INCLUDE_PATH}/sys/uio.h"
         export *
@@ -474,12 +491,14 @@ module SwiftGlibc [system] {
         header "${GLIBC_ARCH_INCLUDE_PATH}/sys/un.h"
         export *
       }
+% end
 % if CMAKE_SDK in ["LINUX"]:
       module user {
         header "${GLIBC_ARCH_INCLUDE_PATH}/sys/user.h"
         export *
       }
 % end
+% if CMAKE_SDK != "BAREMETAL":
       module utsname {
         header "${GLIBC_ARCH_INCLUDE_PATH}/sys/utsname.h"
         export *
@@ -488,6 +507,7 @@ module SwiftGlibc [system] {
         header "${GLIBC_ARCH_INCLUDE_PATH}/sys/wait.h"
         export *
       }
+% end
     }
 % if CMAKE_SDK in ["LINUX", "FREEBSD"]:
     module sysexits {
@@ -495,10 +515,12 @@ module SwiftGlibc [system] {
       export *
     }
 % end
+% if CMAKE_SDK != "BAREMETAL":
     module termios {
       header "${GLIBC_INCLUDE_PATH}/termios.h"
       export *
     }
+% end
     module unistd {
       header "${GLIBC_INCLUDE_PATH}/unistd.h"
       export *
