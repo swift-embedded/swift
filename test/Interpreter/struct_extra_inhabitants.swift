@@ -190,7 +190,9 @@ tests.test("types that have extra inhabitants") {
   expectHasExtraInhabitant(GenericFullHouse<UnsafeRawPointer, UnsafeRawPointer>.self, nil: nil)
 }
 
-tests.test("types that have more than one extra inhabitant") {
+tests.test("types that have more than one extra inhabitant")
+  .skip(.baremetalAny(reason: "TODO"))
+  .code {
   expectHasAtLeastThreeExtraInhabitants(StringAlike64.self, nil: nil, someNil: .some(nil), someSomeNil: .some(.some(nil)))
   expectHasAtLeastThreeExtraInhabitants(StringAlike32.self, nil: nil, someNil: .some(nil), someSomeNil: .some(.some(nil)))
 }

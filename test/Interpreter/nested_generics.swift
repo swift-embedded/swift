@@ -116,8 +116,12 @@ class SubClass<X : MyPrintable, Y : MyPrintable> : OuterStruct<Y>.InnerClass<X> 
 // CHECK: 1 two
 // CHECK: 1 two [3]
 OuterStruct<Int>.InnerStruct<String>(u: "two").printBoth(t: 1)
+print("")
 OuterStruct<Int>.InnerStruct<String>.printBoth(t: 1, u: "two")
+print("")
 OuterStruct<Int>.InnerStruct<String>(u: "two").printAllThree(t: 1, v: [3])
+print("")
 
 // CHECK: override 1 two [3]
 SubClass<String, Int>(u: "two").printAllThree(t: 1, v: [3])
+print("")

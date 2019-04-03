@@ -3,6 +3,9 @@
 // REQUIRES: executable_test
 // REQUIRES: objc_interop
 
+// We don't have Foundation on baremetal.
+// UNSUPPORTED: OS=none-eabi
+
 import Foundation
 
 func vf(_ params: CVarArg...) {

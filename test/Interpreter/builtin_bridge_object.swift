@@ -6,6 +6,8 @@
 // REQUIRES: executable_test
 // REQUIRES: objc_interop
 
+// UNSUPPORTED: OS=none-eabi
+
 // FIXME: rdar://problem/19648117 Needs splitting objc parts out
 
 import Swift

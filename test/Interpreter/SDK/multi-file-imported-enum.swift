@@ -5,6 +5,8 @@
 
 // REQUIRES: executable_test
 // REQUIRES: objc_interop
+// UNSUPPORTED: OS=none-eabi
+// XFAIL: linux
 
 import Foundation
 

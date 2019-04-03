@@ -4,6 +4,9 @@
 // RUN: %target-run %t/a.out.optimized
 // REQUIRES: executable_test
 
+// TODO: support baremetal
+// UNSUPPORTED: OS=none-eabi
+
 import StdlibUnittest
 
 private let testSuite = TestSuite("extendedGraphemeCluster literals")

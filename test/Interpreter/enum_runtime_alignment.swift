@@ -1,6 +1,7 @@
 // RUN: %target-run-simple-swift | %FileCheck %s
 
 // REQUIRES: executable_test
+// UNSUPPORTED: OS=none-eabi
 
 struct Structure {
   var a: UInt8

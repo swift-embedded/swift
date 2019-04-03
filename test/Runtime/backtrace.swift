@@ -6,7 +6,8 @@
 // doesn't pass through the crash, and `not` may not be available when running
 // on a remote host.
 
-// This is not supported on watchos, ios, or tvos
+// This is not supported on baremetal, watchos, ios, or tvos
+// UNSUPPORTED: OS=none-eabi
 // UNSUPPORTED: OS=watchos
 // UNSUPPORTED: OS=ios
 // UNSUPPORTED: OS=tvos
