@@ -141,12 +141,12 @@ if(SWIFT_BUILD_STATIC_STDLIB AND "${sdk}" STREQUAL "LINUX")
   add_custom_command_target(swift_static_binary_${sdk}_args
     COMMAND
       "${CMAKE_COMMAND}" -E copy
-      "${SWIFT_SOURCE_DIR}/utils/static-executable-args.lnk"
+      "${SWIFT_SOURCE_DIR}/utils/static-executable-args-linux.lnk"
       "${SWIFTSTATICLIB_DIR}/${linkfile}"
     OUTPUT
       "${SWIFTSTATICLIB_DIR}/${linkfile}"
     DEPENDS
-      "${SWIFT_SOURCE_DIR}/utils/static-executable-args.lnk")
+      "${SWIFT_SOURCE_DIR}/utils/static-executable-args-linux.lnk")
 
   list(APPEND static_binary_lnk_file_list ${swift_static_binary_${sdk}_args})
   swift_install_in_component(stdlib
@@ -163,6 +163,17 @@ if(SWIFT_BUILD_STATIC_STDLIB AND "${sdk}" STREQUAL "LINUX")
     C_COMPILE_FLAGS ${swift_runtime_library_compile_flags}
     LINK_FLAGS ${swift_runtime_linker_flags}
     INSTALL_IN_COMPONENT never_install)
+elseif(SWIFT_BUILD_STATIC_STDLIB AND "${sdk}" STREQUAL "BAREMETAL")
+  set(linkfile "${lowercase_sdk}/static-executable-args.lnk")
+  add_custom_command_target(swift_static_binary_${sdk}_args
+    COMMAND
+      "${CMAKE_COMMAND}" -E copy
+      "${SWIFT_SOURCE_DIR}/utils/static-executable-args-baremetal.lnk"
+      "${SWIFTSTATICLIB_DIR}/${linkfile}"
+    OUTPUT
+      "${SWIFTSTATICLIB_DIR}/${linkfile}"
+    DEPENDS
+      "${SWIFT_SOURCE_DIR}/utils/static-executable-args-baremetal.lnk")
 endif()
 
 add_swift_target_library(swiftRuntime OBJECT_LIBRARY TARGET_LIBRARY
