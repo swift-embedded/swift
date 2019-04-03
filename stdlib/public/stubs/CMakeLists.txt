@@ -13,14 +13,14 @@ set(swift_stubs_objc_sources
     FoundationHelpers.mm
     OptionalBridgingHelper.mm
     Reflection.mm
-    SwiftNativeNSXXXBaseARC.mm
     SwiftNativeNSXXXBase.mm.gyb)
 set(swift_stubs_unicode_normalization_sources
     UnicodeNormalization-BareMetal.cpp
     UnicodeNormalization.cpp)
 set(LLVM_OPTIONAL_SOURCES
     ${swift_stubs_objc_sources}
-    ${swift_stubs_unicode_normalization_sources})
+    ${swift_stubs_unicode_normalization_sources}
+    SwiftNativeNSXXXBaseARC.m)
 
 set(swift_stubs_c_compile_flags ${SWIFT_RUNTIME_CORE_CXX_FLAGS})
 list(APPEND swift_stubs_c_compile_flags -DswiftCore_EXPORTS)
@@ -31,6 +31,8 @@ add_swift_target_library(swiftStdlibStubs
                     ${swift_stubs_sources}
                     ${swift_stubs_objc_sources}
                     ${swift_stubs_unicode_normalization_sources}
+                  SOURCES_OSX
+                    SwiftNativeNSXXXBaseARC.m
                   C_COMPILE_FLAGS
                     ${swift_stubs_c_compile_flags}
                   LINK_FLAGS
@@ -38,9 +40,7 @@ add_swift_target_library(swiftStdlibStubs
                   INSTALL_IN_COMPONENT
                     stdlib)
 
-                #if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-                #  set_property(SOURCE
-                #                 SwiftNativeNSXXXBaseARC.m
-                #               APPEND_STRING PROPERTY COMPILE_FLAGS
-                #                 "-fobjc-arc")
-                #endif()
+set_property(SOURCE
+               SwiftNativeNSXXXBaseARC.m
+             APPEND_STRING PROPERTY COMPILE_FLAGS
+               "-fobjc-arc")
