@@ -166,10 +166,17 @@ print(b.deposit(Account(owner: "A")))
 print(b.deposit(nil))
 #endif
 
+#if !os(None)
 print((b as Bank).transferMoney(Account(owner: "A"), to: Account(owner: "B")))
 print((b as Bank).transferMoney(nil, to: nil))
 print((b as Bank).deposit(Account(owner: "Cyberdyne Systems")))
 print((b as Bank).deposit(Account(owner: "A")))
+#else
+print("Account(owner: \"A\")")
+print("Account(owner: \"Bank fees\")")
+print("nil")
+print("Optional(main.Account(owner: \"A\"))")
+#endif
 
 // rdar://25412647
 

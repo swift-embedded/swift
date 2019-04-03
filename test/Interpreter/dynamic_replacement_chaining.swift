@@ -20,6 +20,8 @@
 
 // This test flips the chaining flag.
 // UNSUPPORTED: swift_test_mode_optimize_none_with_implicit_dynamic
+// Not supported on baremetal as there is no dynamic linking.
+// UNSUPPORTED: OS=none-eabi
 
 import A
 

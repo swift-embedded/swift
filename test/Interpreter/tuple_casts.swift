@@ -49,6 +49,7 @@ tupleCastTests.test("Incorrect labels conditional cast") {
 tupleCastTests
   .test("Incorrect labels forced cast")
   .crashOutputMatches("Could not cast value of type '(x: Swift.Int, z: Swift.Int)'")
+  .skip(.baremetalAny(reason: "Crash testing not supported"))
   .code {
   expectCrashLater()
   _ = anyToIntPoint((x: 1, z: 2))
@@ -112,6 +113,7 @@ tupleCastTests.test("Elementwise tuple casts that conditionally fail") {
 tupleCastTests
   .test("Elementwise tuple casts that crash (1/3)")
   .crashOutputMatches("Could not cast value of type 'main.LifetimeA'")
+  .skip(.baremetalAny(reason: "Crash testing not supported"))
   .code {
   let abc: (P, Any, P) = (LifetimeA(value: 1),
                           LifetimeB(value: 2),
@@ -123,6 +125,7 @@ tupleCastTests
 tupleCastTests
   .test("Elementwise tuple casts that crash (2/3)")
   .crashOutputMatches("Could not cast value of type 'main.LifetimeB")
+  .skip(.baremetalAny(reason: "Crash testing not supported"))
   .code {
   let abc: (P, Any, P) = (LifetimeA(value: 1),
                           LifetimeB(value: 2),
@@ -134,6 +137,7 @@ tupleCastTests
 tupleCastTests
   .test("Elementwise tuple casts that crash (3/3)")
   .crashOutputMatches("Could not cast value of type 'main.LifetimeC")
+  .skip(.baremetalAny(reason: "Crash testing not supported"))
   .code {
   let abc: (P, Any, P) = (LifetimeA(value: 1),
                           LifetimeB(value: 2),

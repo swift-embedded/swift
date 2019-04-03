@@ -26,6 +26,7 @@ EnumTestSuite.test("PlainOldSwitch/NonExhaustive") {
 }
 
 EnumTestSuite.test("TrapOnUnexpected/NonExhaustive")
+    .skip(.baremetalAny(reason: "Crash testing not supported"))
     .crashOutputMatches("'NonExhaustiveEnum(rawValue: 3)'")
     .code {
   expectCrashLater()
@@ -39,6 +40,7 @@ EnumTestSuite.test("TrapOnUnexpected/NonExhaustive")
 }
 
 EnumTestSuite.test("TrapOnUnexpectedNested/NonExhaustive")
+    .skip(.baremetalAny(reason: "Crash testing not supported"))
     .crashOutputMatches("'(NonExhaustiveEnum, NonExhaustiveEnum)'")
     .code {
   expectCrashLater()
@@ -54,6 +56,7 @@ EnumTestSuite.test("TrapOnUnexpectedNested/NonExhaustive")
 }
 
 EnumTestSuite.test("TrapOnUnexpectedNested2/NonExhaustive")
+    .skip(.baremetalAny(reason: "Crash testing not supported"))
     .crashOutputMatches("'(NonExhaustiveEnum, NonExhaustiveEnum)'")
     .code {
   expectCrashLater()
@@ -119,6 +122,7 @@ EnumTestSuite.test("PlainOldSwitch/LyingExhaustive") {
 }
 
 EnumTestSuite.test("TrapOnUnexpected/LyingExhaustive")
+    .skip(.baremetalAny(reason: "Crash testing not supported"))
     .crashOutputMatches("'LyingExhaustiveEnum(rawValue: 3)'")
     .code {
   expectCrashLater()
@@ -132,6 +136,7 @@ EnumTestSuite.test("TrapOnUnexpected/LyingExhaustive")
 }
 
 EnumTestSuite.test("TrapOnUnexpectedNested/LyingExhaustive")
+    .skip(.baremetalAny(reason: "Crash testing not supported"))
     .crashOutputMatches("'(LyingExhaustiveEnum, LyingExhaustiveEnum)'")
     .code {
   expectCrashLater()
@@ -147,6 +152,7 @@ EnumTestSuite.test("TrapOnUnexpectedNested/LyingExhaustive")
 }
 
 EnumTestSuite.test("TrapOnUnexpectedNested2/LyingExhaustive")
+    .skip(.baremetalAny(reason: "Crash testing not supported"))
     .crashOutputMatches("'(LyingExhaustiveEnum, LyingExhaustiveEnum)'")
     .code {
   expectCrashLater()
@@ -224,6 +230,7 @@ EnumTestSuite.test("PlainOldSwitch/SwiftExhaustive") {
 }
 
 EnumTestSuite.test("TrapOnUnexpected/SwiftExhaustive")
+    .skip(.baremetalAny(reason: "Crash testing not supported"))
     .crashOutputMatches("'SwiftEnum(rawValue: -42)'")
     .code {
   expectCrashLater()
@@ -237,6 +244,7 @@ EnumTestSuite.test("TrapOnUnexpected/SwiftExhaustive")
 }
 
 EnumTestSuite.test("TrapOnUnexpectedNested/SwiftExhaustive")
+    .skip(.baremetalAny(reason: "Crash testing not supported"))
     .crashOutputMatches("'(SwiftEnum, SwiftEnum)'")
     .code {
   expectCrashLater()
@@ -317,6 +325,7 @@ func switchOnTwoThings<T>(_ a: T, _ b: SwiftEnum) {
 }
 
 EnumTestSuite.test("Generic/Trap")
+    .skip(.baremetalAny(reason: "Crash testing not supported"))
     .crashOutputMatches("'(Int, SwiftEnum)'")
     .code {
   expectCrashLater()
@@ -350,6 +359,7 @@ EnumTestSuite.test("PlainOldSwitch/LargeSwiftExhaustive") {
 }
 
 EnumTestSuite.test("TrapOnUnexpected/LargeSwiftExhaustive")
+    .skip(.baremetalAny(reason: "Crash testing not supported"))
     .crashOutputMatches("'UnsignedSwiftEnum(rawValue: 18446744073709551615)'")
     .code {
   expectCrashLater()
@@ -387,6 +397,7 @@ EnumTestSuite.test("PlainOldSwitch/NestedSwiftExhaustive") {
 }
 
 EnumTestSuite.test("TrapOnUnexpected/NestedSwiftExhaustive")
+    .skip(.baremetalAny(reason: "Crash testing not supported"))
     .crashOutputMatches("'NestedSwiftEnum(rawValue: -1)'")
     .code {
   expectCrashLater()
