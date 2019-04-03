@@ -124,7 +124,7 @@ void IRGenModule::setTrueConstGlobal(llvm::GlobalVariable *var,
     break;
   }
 
-  if (sectionSuffix.hasValue())
+  if (IRGen.Opts.MetadataSections && sectionSuffix.hasValue())
     sectionName += "." + sectionSuffix.getValue();
 
   var->setSection(sectionName);

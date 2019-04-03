@@ -153,9 +153,11 @@ swift::getIRTargetOptions(IRGenOptions &Opts, ASTContext &Ctx) {
   // Explicitly request debugger tuning for LLDB which is the default
   // on Darwin platforms but not on others.
   TargetOpts.DebuggerTuning = llvm::DebuggerKind::LLDB;
-  TargetOpts.FunctionSections = true;
-  TargetOpts.DataSections = true;
-  TargetOpts.ExceptionModel = llvm::ExceptionHandling::None;
+  if (Opts.MetadataSections) {
+    TargetOpts.FunctionSections = true;
+    TargetOpts.DataSections = true;
+    TargetOpts.ExceptionModel = llvm::ExceptionHandling::None;
+  }
 
   auto *Clang = static_cast<ClangImporter *>(Ctx.getClangModuleLoader());
   clang::TargetOptions &ClangOpts = Clang->getTargetInfo().getTargetOpts();
@@ -570,9 +572,11 @@ swift::createTargetMachine(IRGenOptions &Opts, ASTContext &Ctx) {
 
   // Set up TargetOptions and create the target features string.
   TargetOptions TargetOpts;
-  TargetOpts.FunctionSections = true;
-  TargetOpts.DataSections = true;
-  TargetOpts.ExceptionModel = llvm::ExceptionHandling::None;
+  if (Opts.MetadataSections) {
+    TargetOpts.FunctionSections = true;
+    TargetOpts.DataSections = true;
+    TargetOpts.ExceptionModel = llvm::ExceptionHandling::None;
+  }
   std::string CPU;
   std::string EffectiveClangTriple;
   std::vector<std::string> targetFeaturesArray;

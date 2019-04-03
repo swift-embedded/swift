@@ -138,6 +138,9 @@ public:
   /// objects.
   unsigned EmitStackPromotionChecks : 1;
 
+  /// Emit runtime metadata to separate sections.
+  unsigned MetadataSections : 1;
+
   /// The maximum number of bytes used on a stack frame for stack promotion
   /// (includes alloc_stack allocations).
   unsigned StackPromotionSizeLimit = 1024;
@@ -224,7 +227,7 @@ public:
         UseJIT(false), IntegratedREPL(false),
         DisableLLVMOptzns(false), DisableSwiftSpecificLLVMOptzns(false),
         DisableLLVMSLPVectorizer(false), DisableFPElim(true), Playground(false),
-        EmitStackPromotionChecks(false), PrintInlineTree(false),
+        EmitStackPromotionChecks(false), MetadataSections(false), PrintInlineTree(false),
         EmbedMode(IRGenEmbedMode::None), HasValueNamesSetting(false),
         ValueNames(false), EnableReflectionMetadata(true),
         EnableReflectionNames(true), EnableAnonymousContextMangledNames(false),

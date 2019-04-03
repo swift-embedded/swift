@@ -2668,8 +2668,6 @@ llvm::Constant *IRGenModule::emitSwiftProtocols() {
                      "the selected object format.");
   }
 
-  bool separately = true;
-
   auto emitProtocolRecord = [&](ConstantArrayBuilder& records, ProtocolDecl* protocol) {
     auto record = records.beginStruct(ProtocolRecordTy);
 
@@ -2683,7 +2681,7 @@ llvm::Constant *IRGenModule::emitSwiftProtocols() {
   // Define the global variable for the protocol list.
   ConstantInitBuilder builder(*this);
 
-  if (!separately) {
+  if (!IRGen.Opts.MetadataSections) {
     auto recordsArray = builder.beginArray(ProtocolRecordTy);
 
     for (auto *protocol : SwiftProtocols) {
@@ -2795,10 +2793,9 @@ llvm::Constant *IRGenModule::emitProtocolConformances() {
     records.addRelativeAddress(descriptor);
   };
 
-  bool separately = true;
   ConstantInitBuilder builder(*this);
 
-  if (!separately) {
+  if (!IRGen.Opts.MetadataSections) {
     // Define the global variable for the conformance list.
     auto descriptorArray = builder.beginArray(RelativeAddressTy);
 
@@ -2881,8 +2878,6 @@ llvm::Constant *IRGenModule::emitTypeMetadataRecords() {
                      "the selected object format.");
   }
 
-  bool separately = true;
-
   auto emitMetadataRecord = [&](
                               llvm::GlobalVariable& array,
                               NominalTypeDecl& type,
@@ -2903,8 +2898,7 @@ llvm::Constant *IRGenModule::emitTypeMetadataRecords() {
     return record;
   };
 
-
-  if (!separately) {
+  if (!IRGen.Opts.MetadataSections) {
     // Define the global variable for the conformance list.
     // We have to do this before defining the initializer since the entries will
     // contain offsets relative to themselves.
