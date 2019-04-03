@@ -25,6 +25,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 typedef int mode_t;
+#elif defined(_BAREMETAL)
 #else
 #include <semaphore.h>
 #include <sys/ioctl.h>
@@ -39,7 +40,15 @@ typedef int mode_t;
 #endif
 
 // File control <fcntl.h>
-#if !defined(_WIN32) || defined(__CYGWIN__)
+#if defined(_BAREMETAL)
+static inline int _swift_stdlib_fcntl(int fd, int cmd, int value) {
+  return -1;
+}
+
+static inline int _swift_stdlib_fcntlPtr(int fd, int cmd, void* ptr) {
+  return -1;
+}
+#elif !defined(_WIN32) || defined(__CYGWIN__)
 static inline int _swift_stdlib_fcntl(int fd, int cmd, int value) {
   return fcntl(fd, cmd, value);
 }
@@ -50,7 +59,11 @@ static inline int _swift_stdlib_fcntlPtr(int fd, int cmd, void* ptr) {
 #endif
 
 // Environment
-#if defined(__FreeBSD__)
+#if defined(_BAREMETAL)
+static inline char * _Nullable *_swift_stdlib_getEnviron() {
+  return 0;
+}
+#elif defined(__FreeBSD__)
 static inline char * _Nullable * _Null_unspecified _swift_stdlib_getEnviron() {
   extern char **environ;
   return environ;
@@ -72,7 +85,17 @@ static inline void _swift_stdlib_setErrno(int value) {
 }
 
 // Semaphores <semaphore.h>
-#if !defined(_WIN32) || defined(__CYGWIN__)
+#if defined(_BAREMETAL)
+typedef int sem_t;
+static inline sem_t *_stdlib_sem_open2(const char *name, int oflag) {
+  while(1) {}
+}
+
+static inline sem_t *_stdlib_sem_open4(const char *name, int oflag,
+                                       mode_t mode, unsigned int value) {
+  while(1) {}
+}
+#elif !defined(_WIN32) || defined(__CYGWIN__) 
 static inline sem_t *_stdlib_sem_open2(const char *name, int oflag) {
   return sem_open(name, oflag);
 }
@@ -81,11 +104,18 @@ static inline sem_t *_stdlib_sem_open4(const char *name, int oflag,
                                        mode_t mode, unsigned int value) {
   return sem_open(name, oflag, mode, value);
 }
-
 #endif // !(defined(_WIN32) && !defined(__CYGWIN__))
 
 // I/O control <ioctl.h>
-#if !defined(_WIN32) || defined(__CYGWIN__)
+#if defined(_BAREMETAL)
+static inline int _swift_stdlib_ioctl(int fd, unsigned long int request, int value) {
+  return -1;
+}
+
+static inline int _swift_stdlib_ioctlPtr(int fd, unsigned long int request, void* ptr) {
+  return -1;
+}
+#elif !defined(_WIN32) || defined(__CYGWIN__)
 static inline int _swift_stdlib_ioctl(int fd, unsigned long int request, int value) {
   return ioctl(fd, request, value);
 }
@@ -95,7 +125,16 @@ static inline int _swift_stdlib_ioctlPtr(int fd, unsigned long int request, void
 }
 #endif
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_BAREMETAL)
+int static inline _swift_stdlib_open(const char *path, int oflag, mode_t mode) {
+  return -1;
+}
+
+int static inline _swift_stdlib_openat(int fd, const char *path, int oflag,
+                                       mode_t mode) {
+  return -1;
+}
+#elif defined(_WIN32) && !defined(__CYGWIN__)
 // Windows
 static inline int _swift_stdlib_open(const char *path, int oflag, mode_t mode) {
   return _open(path, oflag, (int)mode);
