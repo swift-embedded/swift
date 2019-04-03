@@ -1723,6 +1723,7 @@ function(add_swift_target_library name)
         SWIFT_MODULE_DEPENDS_WATCHOS
         SWIFT_MODULE_DEPENDS_WINDOWS
         SWIFT_MODULE_DEPENDS_BAREMETAL
+        SOURCES_OSX
         TARGET_SDKS)
 
   cmake_parse_arguments(SWIFTLIB
@@ -1825,6 +1826,8 @@ function(add_swift_target_library name)
     if(${sdk} STREQUAL OSX)
       list(APPEND swiftlib_module_depends_flattened
            ${SWIFTLIB_SWIFT_MODULE_DEPENDS_OSX})
+      list(APPEND SWIFTLIB_SOURCES
+           ${SWIFTLIB_SOURCES_OSX})
     elseif(${sdk} STREQUAL IOS OR ${sdk} STREQUAL IOS_SIMULATOR)
       list(APPEND swiftlib_module_depends_flattened
            ${SWIFTLIB_SWIFT_MODULE_DEPENDS_IOS})
