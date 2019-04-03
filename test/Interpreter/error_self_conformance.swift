@@ -10,6 +10,19 @@ enum MyError: Error {
   case reallyImportant(String)
 }
 
+#if os(None)
+extension MyError : CustomStringConvertible {
+  var description: String {
+    switch self {
+    case .nothingImportant:
+      return "nothingImportant"
+    case .reallyImportant(let str):
+      return "reallyImportant(\"\(str)\")"
+    }
+  }
+}
+#endif
+
 // CHECK: start
 print("start")
 
@@ -45,6 +58,14 @@ struct Carrier<T> {
 }
 protocol ErrorCarrier {}
 extension Carrier: ErrorCarrier where T: Error {}
+
+#if os(None)
+extension Carrier : CustomStringConvertible {
+  var description: String {
+    return name
+  }
+}
+#endif
 
 func castValueToErrorCarrier<T>(_ value: T) -> ErrorCarrier? {
   return value as? ErrorCarrier

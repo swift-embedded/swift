@@ -5,6 +5,9 @@
 // RUN: %target-codesign %t/main %t/libModule1.%target-dylib-extension %t/libModule2.%target-dylib-extension
 // RUN: %target-run %t/main %t/libModule1.%target-dylib-extension %t/libModule2.%target-dylib-extension
 
+// No dynamic linking on baremetal
+// UNSUPPORTED: OS=none-eabi
+
 
 import Module1
 

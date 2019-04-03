@@ -40,6 +40,7 @@ DynamicMetadataCycleTests.test("cycle through enum")
   .crashOutputMatches("  main.test0_Node")
   .crashOutputMatches("  depends on layout of resil.ResilientGenericStruct<main.test0_Node")
   .crashOutputMatches("  depends on layout of main.test0_Node")
+  .skip(.baremetalAny(reason: "Crash testing not supported"))
   .code {
     expectCrashLater()
     _blackHole(test0_Node.self)

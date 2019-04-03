@@ -2,7 +2,8 @@
 // RUN: %target-build-swift %s -o %t/a.out
 // RUN: not --crash %t/a.out 2>&1 | %utils/backtrace-check
 
-// This is not supported on watchos, ios, or tvos
+// This is not supported on baremetal, watchos, ios, or tvos
+// UNSUPPORTED: OS=none-eabi
 // UNSUPPORTED: OS=watchos
 // UNSUPPORTED: OS=ios
 // UNSUPPORTED: OS=tvos

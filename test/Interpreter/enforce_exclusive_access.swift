@@ -5,6 +5,9 @@
 // RUN: %target-run %t/a.out
 // REQUIRES: executable_test
 
+// Not supported on baremetal, as we have no threads support and do not support testing crashes
+// UNSUPPORTED: OS=none-eabi
+
 // Tests for traps at run time when enforcing exclusive access.
 
 import StdlibUnittest

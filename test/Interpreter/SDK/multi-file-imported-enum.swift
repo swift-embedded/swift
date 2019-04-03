@@ -4,6 +4,7 @@
 // RUN: %target-run %t/a.out | %FileCheck %s
 // REQUIRES: executable_test
 
+// UNSUPPORTED: OS=none-eabi
 // XFAIL: linux
 
 import Foundation

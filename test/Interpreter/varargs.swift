@@ -3,6 +3,9 @@
 
 // XFAIL: linux
 
+// We don't have Foundation on baremetal.
+// UNSUPPORTED: OS=none-eabi
+
 import Foundation
 
 func vf(_ params: CVarArg...) {

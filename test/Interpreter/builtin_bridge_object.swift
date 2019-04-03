@@ -4,6 +4,8 @@
 // RUN: %target-run %t/a.out | %FileCheck %s
 // REQUIRES: executable_test
 
+// UNSUPPORTED: OS=none-eabi
+
 // FIXME: rdar://problem/19648117 Needs splitting objc parts out
 // XFAIL: linux
 

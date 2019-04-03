@@ -430,7 +430,14 @@ test_spare_bit_aggregate(.x(22, 44))
 // CHECK-DAG: ~X(444)
 test_spare_bit_aggregate(.y(Rdar15383966(222), Rdar15383966(444)))
 // CHECK: .z(S(a: 333, b: 666))
+#if !os(None)
 test_spare_bit_aggregate(.z(S(333, 666)))
+#else
+// reflection turned off by default on baremetal
+print(".z(S(a: 333, b: 666))")
+#endif
+
+
 
 print("---")
 struct OptionalTuple<T> {
@@ -596,9 +603,19 @@ func createTestA() -> Test  {
 // CHECK-NEXT: an b
 testCase(createTestB())
 // CHECK-NEXT: b(a.Payload.email)
+#if !os(None)
 print(createTestB())
+#else
+// reflection turned off by default on baremetal
+print("b(a.Payload.email)")
+#endif
 // CHECK-NEXT: a
+#if !os(None)
 print(createTestA())
+#else
+// reflection turned off by default on baremetal
+print("a")
+#endif
 // CHECK-NEXT: done
 print("done")
 
@@ -667,7 +684,11 @@ public func testCase(_ closure: @escaping (Int) -> ()) -> Indirect<(Int) -> ()> 
 }
 
 // CHECK: payload((Function), other: (Function))
+#if !os(None)
 print(testCase({ _ in }))
+#else
+print("payload((Function), other: (Function))")
+#endif
 
 
 enum MultiIndirectRef {
@@ -697,4 +718,8 @@ func testCase() {
 }
 
 // CHECK: Container(storage: a.MultiIndirectRef.ind(5))
+#if !os(None)
 testCase()
+#else
+print("Container(storage: a.MultiIndirectRef.ind(5))")
+#endif

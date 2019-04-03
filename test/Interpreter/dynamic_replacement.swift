@@ -48,6 +48,7 @@
 
 
 // REQUIRES: executable_test
+// UNSUPPORTED: OS=none-eabi
 
 import Module1
 

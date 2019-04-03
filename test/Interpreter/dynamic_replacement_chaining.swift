@@ -16,6 +16,9 @@
 // RUN: %target-codesign %t/main %t/libA.%target-dylib-extension %t/libB.%target-dylib-extension %t/libC.%target-dylib-extension
 // RUN: %target-run %t/main %t/libA.%target-dylib-extension %t/libB.%target-dylib-extension %t/libC.%target-dylib-extension
 
+// Not supported on baremetal as there is no dynamic linking.
+// UNSUPPORTED: OS=none-eabi
+
 
 import A
 

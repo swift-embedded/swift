@@ -1,3 +1,5 @@
+include (SwiftBareMetalSupport)
+
 function(swift_configure_lit_site_cfg source_path destination_path installed_name)
   if (CMAKE_CFG_INTDIR STREQUAL ".")
     set(SWIFT_BUILD_MODE ".")
@@ -176,6 +178,10 @@ foreach(SDK ${SWIFT_SDKS})
     set(validation_test_bin_dir
         "${CMAKE_CURRENT_BINARY_DIR}/../validation-test${VARIANT_SUFFIX}")
 
+    if("${SDK}" STREQUAL "BAREMETAL")
+      swift_baremetal_include_for_arch(${ARCH} SWIFT_TEST_BAREMETAL_INCLUDES)
+    endif()
+
     swift_configure_lit_site_cfg(
         "${CMAKE_CURRENT_SOURCE_DIR}/lit.site.cfg.in"
         "${test_bin_dir}/lit.site.cfg"
@@ -196,7 +202,7 @@ foreach(SDK ${SWIFT_SDKS})
     list(APPEND test_dependencies
         "swift-test-stdlib-${SWIFT_SDK_${SDK}_LIB_SUBDIR}")
 
-    if(SWIFT_BUILD_STDLIB AND SWIFT_INCLUDE_TESTS)
+    if(SWIFT_BUILD_STDLIB AND SWIFT_INCLUDE_TESTS AND NOT "${SDK}" STREQUAL "BAREMETAL")
       list(APPEND test_dependencies
           "swift-reflection-test${VARIANT_SUFFIX}_signed")
     endif()
