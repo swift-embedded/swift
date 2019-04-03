@@ -36,6 +36,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#if !os(None)
+
 import SwiftPrivate
 import SwiftPrivateLibcExtras
 import SwiftPrivateThreadExtras
@@ -754,3 +756,4 @@ public func runRaceTest(
     timeoutInSeconds: timeoutInSeconds, threads: threads)
 }
 
+#endif /* !os(None) */
