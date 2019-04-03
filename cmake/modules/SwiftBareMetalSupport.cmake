@@ -37,6 +37,7 @@ function(swift_baremetal_swift_compile_flags var)
     "-Xfrontend" "-disable-reflection-metadata"
     "-Xfrontend" "-assume-single-threaded"
     "-enforce-exclusivity=none"
+    "-Xfrontend" "-metadata-sections"
     "-Xcc" "-isystem${SWIFT_BAREMETAL_TOOLCHAIN_PATH}/arm-none-eabi/include"
     PARENT_SCOPE)
 endfunction()

@@ -438,9 +438,13 @@ llvm::Constant *IRGenModule::getMangledAssociatedConformance(
   ApplyIRLinkage(IRLinkage::InternalLinkOnceODR).to(var);
   var->setAlignment(2);
   setTrueConstGlobal(var);
-  auto sectionName = getReflectionTypeRefSectionName() + symbolName;
-  std::replace(sectionName.begin(), sectionName.end(), ' ', '_');
-  var->setSection(sectionName);
+  if (IRGen.Opts.MetadataSections) {
+    auto sectionName = getReflectionTypeRefSectionName() + symbolName;
+    std::replace(sectionName.begin(), sectionName.end(), ' ', '_');
+    var->setSection(sectionName);
+  } else {
+    var->setSection(getReflectionTypeRefSectionName());
+  }
 
   finished.installInGlobal(var);
 

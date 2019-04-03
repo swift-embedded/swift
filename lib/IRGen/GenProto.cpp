@@ -2140,8 +2140,9 @@ void IRGenModule::emitSILWitnessTable(SILWitnessTable *wt) {
     global->setConstant(isConstantWitnessTable(wt));
     global->setAlignment(getWitnessTableAlignment().getValue());
     auto linkEntity = LinkEntity::forProtocolWitnessTable(conf);
-    global->setSection(".rodata." + linkEntity.mangleAsString());
     tableSize = wtableBuilder.getTableSize();
+    if (IRGen.Opts.MetadataSections)
+      global->setSection(".rodata." + linkEntity.mangleAsString());
   } else {
     initializer.abandon();
     tableSize = 0;
