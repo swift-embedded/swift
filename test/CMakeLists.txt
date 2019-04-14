@@ -180,6 +180,9 @@ foreach(SDK ${SWIFT_SDKS})
 
     if("${SDK}" STREQUAL "BAREMETAL")
       swift_baremetal_include_for_arch(${ARCH} SWIFT_TEST_BAREMETAL_INCLUDES)
+      swift_baremetal_lib_for_arch(${ARCH} SWIFT_TEST_BAREMETAL_LIBS)
+      swift_baremetal_swift_compile_flags(SWIFT_TEST_BAREMETAL_SWIFT_FLAGS)
+      swift_baremetal_c_compile_flags(SWIFT_TEST_BAREMETAL_C_FLAGS)
     endif()
 
     swift_configure_lit_site_cfg(
