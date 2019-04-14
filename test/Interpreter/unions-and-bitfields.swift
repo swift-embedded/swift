@@ -2,6 +2,7 @@
 // RUN: %target-codesign %t
 // RUN: %target-run %t
 // REQUIRES: executable_test
+// UNSUPPORTED: OS=none-eabi
 
 // The -disable-bridging-pch above isn't actually relevant to the test; however,
 // precompiled headers don't play nice with the way we include the platform
