@@ -55,8 +55,11 @@ endfunction()
 
 
 function(swift_baremetal_lib_for_arch arch var)
+  _swift_baremetal_gcc_flags_for_arch(${arch} gccflags)
+
+  string(REPLACE ";" " " gccflags_ss "${gccflags}")
   execute_process(COMMAND
-    bash -c "${arm-none-eabi-gcc} -print-search-dirs | grep libraries | sed 's/libraries: =//g' | sed 's/:/;/g'"
+    bash -c "${arm-none-eabi-gcc} ${gccflags_ss} -print-search-dirs | grep libraries | sed 's/libraries: =//g' | sed 's/:/;/g'"
     OUTPUT_STRIP_TRAILING_WHITESPACE
     OUTPUT_VARIABLE paths)
   set(${var} ${paths} PARENT_SCOPE)
