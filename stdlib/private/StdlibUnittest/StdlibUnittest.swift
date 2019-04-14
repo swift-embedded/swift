@@ -12,7 +12,7 @@
 
 
 import SwiftPrivate
-#if !os(None)
+#if !os(none)
 import SwiftPrivatePthreadExtras
 import SwiftPrivateLibcExtras
 #endif
@@ -699,7 +699,7 @@ public func expectCrash(withMessage message: String = "", executing: () -> Void)
 }
 
 func _defaultTestSuiteFailedCallback() {
-#if !os(None)
+#if !os(none)
   abort()
 #else
   fatalError("test-suite failed")
@@ -713,7 +713,7 @@ public func _setTestSuiteFailedCallback(_ callback: @escaping () -> Void) {
 }
 
 func _defaultTrappingExpectationFailedCallback() {
-#if !os(None)
+#if !os(none)
   abort()
 #else
   fatalError("test-suite trap")
@@ -727,7 +727,7 @@ public func _setTrappingExpectationFailedCallback(callback: @escaping () -> Void
   _trappingExpectationFailedCallback = callback
 }
 
-#if !os(None)
+#if !os(none)
 extension ProcessTerminationStatus {
   var isSwiftTrap: Bool {
     switch self {
@@ -785,7 +785,7 @@ func _installTrapInterceptor()
 }
 #endif
 
-#if !os(None)
+#if !os(none)
 
 func _stdlib_getline() -> String? {
   var result: [UInt8] = []
@@ -869,7 +869,7 @@ class _ParentProcess {
       _FDInputStream(handle: INVALID_HANDLE_VALUE)
   internal var _childStderr: _FDInputStream =
       _FDInputStream(handle: INVALID_HANDLE_VALUE)
-#elseif !os(None)
+#elseif !os(none)
   internal var _pid: pid_t?
   internal var _childStdin: _FDOutputStream = _FDOutputStream(fd: -1)
   internal var _childStdout: _FDInputStream = _FDInputStream(fd: -1)
@@ -881,7 +881,7 @@ class _ParentProcess {
   internal var _args: [String]
 
   init(runTestsInProcess: Bool, args: [String], filter: String?) {
-#if os(None)
+#if os(none)
     precondition(runTestsInProcess == true, "only in-process testing supported")
 #endif
     self._runTestsInProcess = runTestsInProcess
@@ -889,7 +889,7 @@ class _ParentProcess {
     self._args = args
   }
 
-#if !os(None)
+#if !os(none)
   func _spawnChild() {
     let params = ["--stdlib-unittest-run-child"] + _args
 #if os(Windows)
@@ -1200,7 +1200,7 @@ class _ParentProcess {
     }
   }
 
-#endif /* !os(None) */
+#endif /* !os(none) */
 
   internal enum _TestStatus {
     case skip([TestRunPredicate])
@@ -1227,7 +1227,7 @@ class _ParentProcess {
     print("[ RUN      ] \(fullTestName)\(activeXFailsText)")
 
     var expectCrash = false
-#if !os(None)
+#if !os(none)
     var childTerminationStatus: ProcessTerminationStatus?
 #endif
     var crashStdout: [Substring] = []
@@ -1244,7 +1244,7 @@ class _ParentProcess {
         testSuite._runTest(name: t.name, parameter: testParameter)
       }
     } else {
-#if !os(None)
+#if !os(none)
       (_anyExpectFailed, expectCrash, childTerminationStatus, crashStdout,
        crashStderr) =
         _runTestInChild(testSuite, t.name, parameter: testParameter)
@@ -1255,7 +1255,7 @@ class _ParentProcess {
 
     // Determine if the test passed, not taking XFAILs into account.
     var testPassed = false
-#if !os(None)
+#if !os(none)
     switch (childTerminationStatus, expectCrash) {
     case (.none, false):
       testPassed = !_anyExpectFailed
@@ -1374,7 +1374,7 @@ class _ParentProcess {
         print("\(testSuite.name): All tests passed")
       }
     }
-#if !os(None)
+#if !os(none)
     let (failed: failedOnShutdown, ()) = _shutdownChild()
     if failedOnShutdown {
       print("The child process failed during shutdown, aborting.")
@@ -1396,7 +1396,7 @@ struct PersistentState {
   static func complainIfNothingRuns() {
     if !complaintInstalled {
       complaintInstalled = true
-#if !os(None)
+#if !os(none)
       atexit {
         if !PersistentState.ranSomething {
           print("Ran no tests and runNoTests() was not called. Aborting. ")
@@ -1450,7 +1450,7 @@ public func runAllTests() {
     CommandLine.arguments.contains("--stdlib-unittest-run-child")
 
   if _isChildProcess {
-#if !os(None)
+#if !os(none)
     _childProcess()
 #else
     fatalError("running tests in child process not supported")
@@ -1461,7 +1461,7 @@ public func runAllTests() {
     var args = [String]()
     var i = 0
     i += 1 // Skip the name of the executable.
-#if os(None)
+#if os(none)
     // We have no support for processes on baremetal
     runTestsInProcess = true
 #endif
@@ -1842,7 +1842,7 @@ func _getOSVersion() -> OSVersion {
   return .windows
 #elseif os(Haiku)
   return .haiku
-#elseif os(None)
+#elseif os(none)
   return .none
 #else
   let productVersion = _getSystemVersionPlistProperty("ProductVersion")!

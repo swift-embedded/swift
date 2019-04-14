@@ -10,7 +10,7 @@ enum MyError: Error {
   case reallyImportant(String)
 }
 
-#if os(None)
+#if os(none)
 extension MyError : CustomStringConvertible {
   var description: String {
     switch self {
@@ -59,7 +59,7 @@ struct Carrier<T> {
 protocol ErrorCarrier {}
 extension Carrier: ErrorCarrier where T: Error {}
 
-#if os(None)
+#if os(none)
 extension Carrier : CustomStringConvertible {
   var description: String {
     return name
