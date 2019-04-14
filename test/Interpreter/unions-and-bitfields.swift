@@ -4,6 +4,7 @@
 
 // REQUIRES: executable_test
 // REQUIRES: objc_interop
+// UNSUPPORTED: OS=none-eabi
 
 // The -disable-bridging-pch above isn't actually relevant to the test; however,
 // precompiled headers don't play nice with the way we include the platform
