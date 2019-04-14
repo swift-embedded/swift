@@ -131,7 +131,7 @@ class Spoon: Runcible {
   let x: Int
   init(x: Int) { self.x = x }
 }
-#if os(None)
+#if os(none)
 extension Spoon : CustomStringConvertible {
   var description: String {
     return "Spoon(\n\tx: \(x))"

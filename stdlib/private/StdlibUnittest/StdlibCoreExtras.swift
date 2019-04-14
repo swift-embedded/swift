@@ -11,7 +11,7 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftPrivate
-#if !os(None)
+#if !os(none)
 import SwiftPrivateLibcExtras
 #endif
 #if os(macOS) || os(iOS)
@@ -85,7 +85,7 @@ public func createTemporaryFile(
 #else
   var fileName = fileNamePrefix + "XXXXXX" + fileNameSuffix
 #endif
-#if !os(None)
+#if !os(none)
   let fd = _stdlib_mkstemps(
     &fileName, CInt(fileNameSuffix.utf8.count))
   if fd < 0 {

@@ -166,7 +166,7 @@ print(b.deposit(Account(owner: "A")))
 print(b.deposit(nil))
 #endif
 
-#if !os(None)
+#if !os(none)
 print((b as Bank).transferMoney(Account(owner: "A"), to: Account(owner: "B")))
 print((b as Bank).transferMoney(nil, to: nil))
 print((b as Bank).deposit(Account(owner: "Cyberdyne Systems")))
