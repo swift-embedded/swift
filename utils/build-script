@@ -270,12 +270,6 @@ class BuildScriptInvocation(object):
                 "--legacy-impl is incompatible with building packages needing "
                 "a toolchain (indexstore-db or sourcekit-lsp)")
 
-        if args.baremetal:
-            if args.baremetal_toolchain is None:
-                diagnostics.fatal(
-                    'When building for BareMetal, --baremetal-toolchain'
-                    ' must be specified.')
-
     @staticmethod
     def apply_default_arguments(toolchain, args):
         # Infer if ninja is required
@@ -782,7 +776,7 @@ class BuildScriptInvocation(object):
                 "--android-deploy-device-path",
                 args.android_deploy_device_path,
             ]
-        if args.baremetal:
+        if args.baremetal and args.baremetal_toolchain:
             impl_args += [
                 "--baremetal-toolchain", args.baremetal_toolchain,
             ]
