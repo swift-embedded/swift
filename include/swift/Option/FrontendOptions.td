@@ -283,6 +283,14 @@ def disable_reflection_names : Flag<["-"], "disable-reflection-names">,
   HelpText<"Disable emission of names of stored properties and enum cases in"
            "reflection metadata">;
 
+def function_sections: Flag<["-"], "function-sections">,
+  Flags<[FrontendOption, NoInteractiveOption, DoesNotAffectIncrementalBuild]>,
+  HelpText<"Emit functions to separate sections.">;
+
+def data_sections: Flag<["-"], "data-sections">,
+  Flags<[FrontendOption, NoInteractiveOption, DoesNotAffectIncrementalBuild]>,
+  HelpText<"Emit data to separate sections.">;
+
 def metadata_sections: Flag<["-"], "metadata-sections">,
   Flags<[FrontendOption, NoInteractiveOption, DoesNotAffectIncrementalBuild]>,
   HelpText<"Emit type metadata to separate sections.">;

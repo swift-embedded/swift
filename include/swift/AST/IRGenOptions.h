@@ -138,6 +138,12 @@ public:
   /// objects.
   unsigned EmitStackPromotionChecks : 1;
 
+  /// Emit functions to separate sections.
+  unsigned FunctionSections : 1;
+
+  /// Emit data to separate sections.
+  unsigned DataSections : 1;
+
   /// Emit runtime metadata to separate sections.
   unsigned MetadataSections : 1;
 
@@ -227,7 +233,8 @@ public:
         UseJIT(false), IntegratedREPL(false),
         DisableLLVMOptzns(false), DisableSwiftSpecificLLVMOptzns(false),
         DisableLLVMSLPVectorizer(false), DisableFPElim(true), Playground(false),
-        EmitStackPromotionChecks(false), MetadataSections(false), PrintInlineTree(false),
+        EmitStackPromotionChecks(false), FunctionSections(false), DataSections(false),
+        MetadataSections(false), PrintInlineTree(false),
         EmbedMode(IRGenEmbedMode::None), HasValueNamesSetting(false),
         ValueNames(false), EnableReflectionMetadata(true),
         EnableReflectionNames(true), EnableAnonymousContextMangledNames(false),
