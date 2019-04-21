@@ -257,12 +257,6 @@ class BuildScriptInvocation(object):
                     "--android-icu-uc-include, --android-icu-i18n, "
                     "and --android-icu-i18n-include must be specified")
 
-        if args.baremetal:
-            if args.baremetal_toolchain is None:
-                diagnostics.fatal(
-                    'When building for BareMetal, --baremetal-toolchain'
-                    ' must be specified.')
-
     @staticmethod
     def apply_default_arguments(toolchain, args):
         # Infer if ninja is required
@@ -713,7 +707,7 @@ class BuildScriptInvocation(object):
                 "--android-deploy-device-path",
                 args.android_deploy_device_path,
             ]
-        if args.baremetal:
+        if args.baremetal and args.baremetal_toolchain:
             impl_args += [
                 "--baremetal-toolchain", args.baremetal_toolchain,
             ]

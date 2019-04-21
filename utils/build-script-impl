@@ -2222,6 +2222,14 @@ for host in "${ALL_HOSTS[@]}"; do
                 fi
 
                 if [[ ! "${SKIP_BUILD_BAREMETAL}" ]]; then
+                    if [[ -z "$BAREMETAL_TOOLCHAIN" ]] && which arm-none-eabi-gcc ; then
+                      BAREMETAL_TOOLCHAIN="$(dirname "$(arm-none-eabi-gcc --print-sysroot)")"
+                      echo "BAREMETAL_TOOLCHAIN: $BAREMETAL_TOOLCHAIN"
+                    else
+                      echo "arm-none-eabi-gcc not found. Please use --baremetal-toolchain"
+                      exit 1
+                    fi
+
                     cmake_options=(
                         "${cmake_options[@]}"
                         -DSWIFT_BAREMETAL_TOOLCHAIN_PATH:STRING="${BAREMETAL_TOOLCHAIN}"
