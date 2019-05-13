@@ -34,10 +34,10 @@ if(SWIFT_INCLUDE_TOOLS)
     add_custom_target(swiftReflection-${SWIFT_SDK_${SWIFT_HOST_VARIANT_SDK}_LIB_SUBDIR})
   endif()
 
-  if(NOT SWIFT_BUILD_RUNTIME_WITH_HOST_COMPILER)
-    set(CMAKE_C_COMPILER ${HOST_CMAKE_C_COMPILER})
-    set(CMAKE_CXX_COMPILER ${HOST_CMAKE_CXX_COMPILER})
-  endif()
+  #if(NOT SWIFT_BUILD_RUNTIME_WITH_HOST_COMPILER)
+  #  set(CMAKE_C_COMPILER ${HOST_CMAKE_C_COMPILER})
+  #  set(CMAKE_CXX_COMPILER ${HOST_CMAKE_CXX_COMPILER})
+  #endif()
 
   add_swift_host_library(swiftReflection STATIC
     ${swiftReflection_SOURCES})
