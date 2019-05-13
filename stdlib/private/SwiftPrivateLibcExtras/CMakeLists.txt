@@ -1,7 +1,7 @@
 set(SWIFT_LIBC_EXTRA_TARGETS "${SWIFT_SDKS}")
 list(REMOVE_ITEM SWIFT_LIBC_EXTRA_TARGETS "BAREMETAL")
 
-if(NOT ${SWIFT_LIBC_EXTRA_TARGETS} STREQUAL "")
+if(NOT "${SWIFT_LIBC_EXTRA_TARGETS}" STREQUAL "")
   add_swift_target_library(swiftSwiftPrivateLibcExtras ${SWIFT_STDLIB_LIBRARY_BUILD_TYPES} IS_STDLIB
     # This file should be listed the first.  Module name is inferred from the
     # filename.

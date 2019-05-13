@@ -1,6 +1,10 @@
 # libswiftRemoteMirror.dylib should not have runtime dependencies; it's
 # always built as a shared library.
-if(SWIFT_BUILD_DYNAMIC_STDLIB)
+set(SWIFT_REMOTE_MIRROR_TARGETS "${SWIFT_SDKS}")
+list(REMOVE_ITEM SWIFT_REMOTE_MIRROR_TARGETS "BAREMETAL")
+
+if(SWIFT_BUILD_DYNAMIC_STDLIB AND (NOT "${SWIFT_REMOTE_MIRROR_TARGETS}" STREQUAL ""))
+
   add_swift_target_library(swiftRemoteMirror
                            SHARED TARGET_LIBRARY DONT_EMBED_BITCODE NOSWIFTRT
                            SwiftRemoteMirror.cpp
@@ -11,7 +15,9 @@ if(SWIFT_BUILD_DYNAMIC_STDLIB)
                            LINK_FLAGS
                              ${SWIFT_RUNTIME_LINK_FLAGS}
                            INSTALL_IN_COMPONENT
-                             swift-remote-mirror)
+                             swift-remote-mirror
+                           TARGET_SDKS
+                             "${SWIFT_REMOTE_MIRROR_TARGETS}")
 endif()
 
 # Build a specific version for the host with the host toolchain.  This is going
