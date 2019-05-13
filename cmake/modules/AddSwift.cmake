@@ -2276,12 +2276,14 @@ endfunction()
 # Additional parameters:
 #   [LINK_FAT_LIBRARIES lipo_target1 ...]
 #     Fat libraries to link with.
+#   [TARGET_SDKS sdk,..]
+#     SDKs for which to build the executable.
 function(add_swift_target_executable name)
   # Parse the arguments we were given.
   cmake_parse_arguments(SWIFTEXE_TARGET
     "EXCLUDE_FROM_ALL;;BUILD_WITH_STDLIB"
     ""
-    "DEPENDS;LLVM_COMPONENT_DEPENDS;LINK_FAT_LIBRARIES"
+    "DEPENDS;LLVM_COMPONENT_DEPENDS;LINK_FAT_LIBRARIES;TARGET_SDKS"
     ${ARGN})
 
   set(SWIFTEXE_TARGET_SOURCES ${SWIFTEXE_TARGET_UNPARSED_ARGUMENTS})
@@ -2300,7 +2302,14 @@ function(add_swift_target_executable name)
         swiftCore)
   endif()
 
-  foreach(sdk ${SWIFT_SDKS})
+  # If target SDKs are not specified, build for all known SDKs.
+  if("${SWIFTEXE_TARGET_TARGET_SDKS}" STREQUAL "")
+    set(SWIFTEXE_TARGET_TARGET_SDKS ${SWIFT_SDKS})
+  endif()
+  list_replace(SWIFTEXE_TARGET_TARGET_SDKS ALL_POSIX_PLATFORMS "ALL_APPLE_PLATFORMS;ANDROID;CYGWIN;FREEBSD;LINUX;HAIKU")
+  list_replace(SWIFTEXE_TARGET_TARGET_SDKS ALL_APPLE_PLATFORMS "${SWIFT_APPLE_PLATFORMS}")
+
+  foreach(sdk ${SWIFTEXE_TARGET_TARGET_SDKS})
     foreach(arch ${SWIFT_SDK_${sdk}_ARCHITECTURES})
       set(VARIANT_SUFFIX "-${SWIFT_SDK_${sdk}_LIB_SUBDIR}-${arch}")
       set(VARIANT_NAME "${name}${VARIANT_SUFFIX}")
