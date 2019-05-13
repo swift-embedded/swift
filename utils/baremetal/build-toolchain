@@ -14,7 +14,9 @@ SWIFT_PATH="$( cd "$(dirname "$0")/../../.." && pwd )"
 PYTHON_EXEC="${PYTHON_EXEC:-$(command -v python)}"
 EXTRA_CMAKE_OPTIONS+=" -DPYTHON_EXECUTABLE:FILEPATH=$PYTHON_EXEC"
 EXTRA_CMAKE_OPTIONS+=" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-EXTRA_CMAKE_OPTIONS+=" -DSWIFT_ENABLE_GOLD_LINKER=NO"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  EXTRA_CMAKE_OPTIONS+=" -DSWIFT_ENABLE_GOLD_LINKER=NO"
+fi
 
 "$SWIFT_PATH"/swift/utils/build-script \
 		--extra-cmake-options="$EXTRA_CMAKE_OPTIONS" \
