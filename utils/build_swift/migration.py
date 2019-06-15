@@ -40,6 +40,7 @@ _SDK_TARGETS = {
     'TVOS_SIMULATOR': StdlibDeploymentTarget.AppleTVSimulator.targets,
     'WATCHOS': StdlibDeploymentTarget.AppleWatch.targets,
     'WATCHOS_SIMULATOR': StdlibDeploymentTarget.AppleWatchSimulator.targets,
+    'BAREMETAL': StdlibDeploymentTarget.BareMetal.targets,
 }
 
 
