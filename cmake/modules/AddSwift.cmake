@@ -778,6 +778,10 @@ function(_add_swift_library_single target name)
   precondition(SWIFTLIB_SINGLE_ARCHITECTURE MESSAGE "Should specify an architecture")
   precondition(SWIFTLIB_SINGLE_INSTALL_IN_COMPONENT MESSAGE "INSTALL_IN_COMPONENT is required")
 
+  if("${SWIFTLIB_SINGLE_SDK}" STREQUAL "BAREMETAL")
+    unset(SWIFTLIB_SINGLE_SHARED)
+  endif()
+
   if(NOT SWIFTLIB_SINGLE_SHARED AND
      NOT SWIFTLIB_SINGLE_STATIC AND
      NOT SWIFTLIB_SINGLE_OBJECT_LIBRARY)
