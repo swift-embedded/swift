@@ -32,25 +32,29 @@ endfunction()
 
 
 function(swift_baremetal_swift_compile_flags var)
-  set(${var}
-    "-Xcc" "-D_BAREMETAL"
+  set(flags)
+  list(APPEND flags
+    "-Xfrontend" "-function-sections"
+    "-Xfrontend" "-data-sections"
+    "-Xfrontend" "-metadata-sections"
     "-Xfrontend" "-disable-reflection-metadata"
     "-Xfrontend" "-assume-single-threaded"
     "-enforce-exclusivity=none"
-    "-Xfrontend" "-metadata-sections"
-    "-Xcc" "-isystem${SWIFT_BAREMETAL_TOOLCHAIN_PATH}/arm-none-eabi/include"
-    PARENT_SCOPE)
+    "-Xcc" "-D_BAREMETAL"
+    "-Xcc" "-isystem${SWIFT_BAREMETAL_TOOLCHAIN_PATH}/arm-none-eabi/include")
+  set(${var} ${flags} PARENT_SCOPE)
 endfunction()
 
 
 function(swift_baremetal_c_compile_flags var)
-  set(${var}
+  set(flags)
+  list(APPEND flags
     "-D_BAREMETAL" "-D_GNU_SOURCE"
     "-D_POSIX_THREADS" "-D_POSIX_READER_WRITER_LOCKS" "-D_UNIX98_THREAD_MUTEX_ATTRIBUTES"
     "-fdata-sections" "-ffunction-sections"
     "-fno-rtti" "-fno-exceptions"
-    "-I${CMAKE_SOURCE_DIR}/stdlib/public/stubs-baremetal/include"
-    PARENT_SCOPE)
+    "-I${CMAKE_SOURCE_DIR}/stdlib/public/stubs-baremetal/include")
+  set(${var} ${flags} PARENT_SCOPE)
 endfunction()
 
 
