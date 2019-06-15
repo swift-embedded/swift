@@ -29,6 +29,9 @@ function usage() {
   echo "--distcc"
   echo "Build with distcc to speed up the toolchain build"
   echo ""
+  echo "--preset"
+  echo "Build the toolchain with given preset"
+  echo ""
 }
 
 RESULT_DIR=$PWD
@@ -66,6 +69,10 @@ while [ $# -ne 0 ]; do
       else
         SWIFT_PACKAGE=buildbot_osx_package
       fi
+  ;;
+    --preset)
+      SWIFT_PACKAGE="$2"
+      shift
   ;;
     --distcc)
       DISTCC_FLAG="--distcc"
