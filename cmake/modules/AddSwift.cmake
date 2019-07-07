@@ -1417,6 +1417,11 @@ function(_add_swift_library_single target name)
       COMMAND cp ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.a ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.no-index.a
       COMMAND arm-none-eabi-ranlib ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.a
       VERBATIM)
+
+    swift_install_in_component(${SWIFTLIB_SINGLE_INSTALL_IN_COMPONENT}
+      FILES ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.a
+      DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/swift_static/${SWIFT_SDK_BAREMETAL_LIB_SUBDIR}/${SWIFTLIB_SINGLE_ARCHITECTURE}"
+      PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
   endif()
 
   # Do not add code here.
