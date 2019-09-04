@@ -65,8 +65,9 @@
 # * testsuite-tools -- extra tools required to run the Swift testsuite.
 # * toolchain-dev-tools -- install development tools useful in a shared toolchain
 # * dev -- headers and libraries required to use Swift compiler as a library.
+# * arm-none-eabi-gcc -- embeds arm-none-eabi-gcc to the Swift toolchain
 set(_SWIFT_DEFINED_COMPONENTS
-  "autolink-driver;compiler;clang-builtin-headers;clang-resource-dir-symlink;clang-builtin-headers-in-clang-resource-dir;stdlib;stdlib-experimental;sdk-overlay;parser-lib;editor-integration;tools;testsuite-tools;toolchain-tools;toolchain-dev-tools;dev;license;sourcekit-xpc-service;sourcekit-inproc;swift-remote-mirror;swift-remote-mirror-headers")
+  "arm-none-eabi-gcc;autolink-driver;compiler;clang-builtin-headers;clang-resource-dir-symlink;clang-builtin-headers-in-clang-resource-dir;stdlib;stdlib-experimental;sdk-overlay;parser-lib;editor-integration;tools;testsuite-tools;toolchain-tools;toolchain-dev-tools;dev;license;sourcekit-xpc-service;sourcekit-inproc;swift-remote-mirror;swift-remote-mirror-headers")
 
 # The default install components include all of the defined components, except
 # for the following exceptions.

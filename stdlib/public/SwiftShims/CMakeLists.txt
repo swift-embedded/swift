@@ -133,3 +133,14 @@ swift_install_in_component(clang-builtin-headers-in-clang-resource-dir
     DIRECTORY "${_SWIFT_SHIMS_PATH_TO_CLANG_BUILD}/lib/clang"
     DESTINATION "lib"
     PATTERN "*.h")
+
+
+swift_install_in_component(arm-none-eabi-gcc
+  DIRECTORY
+    "${SWIFT_BAREMETAL_TOOLCHAIN_PATH}/arm-none-eabi"
+    "${SWIFT_BAREMETAL_TOOLCHAIN_PATH}/bin"
+    "${SWIFT_BAREMETAL_TOOLCHAIN_PATH}/include"
+    "${SWIFT_BAREMETAL_TOOLCHAIN_PATH}/lib"
+    "${SWIFT_BAREMETAL_TOOLCHAIN_PATH}/share"
+  USE_SOURCE_PERMISSIONS
+  DESTINATION "./")
