@@ -8,12 +8,16 @@ function(_swift_baremetal_gcc_flags_for_arch arch var)
 endfunction()
 
 
-function(_swift_baremetal_gcc_find program var)
-  execute_process(
-    COMMAND ${arm-none-eabi-gcc} -print-prog-name=${program}
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    OUTPUT_VARIABLE path)
-  set(${var} ${path} PARENT_SCOPE)
+function(swift_baremetal_gcc_find program var)
+  if(${program} STREQUAL "gcc")
+    set(${var} ${arm-none-eabi-gcc} PARENT_SCOPE)
+  else()
+    execute_process(
+      COMMAND ${arm-none-eabi-gcc} -print-prog-name=${program}
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      OUTPUT_VARIABLE path)
+    set(${var} ${path} PARENT_SCOPE)
+  endif()
 endfunction()
 
 
