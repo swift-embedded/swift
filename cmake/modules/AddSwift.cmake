@@ -308,8 +308,6 @@ function(_add_variant_c_compile_flags)
     list(APPEND result "-D__ANDROID_API__=${SWIFT_ANDROID_API_LEVEL}")
   endif()
 
-  set(ARM_TOOLCHAIN /Users/alandragomirecky/Projects/cvut/masters_thesis/src/gcc-arm-none-eabi/install-native)
-
   if("${CFLAGS_SDK}" STREQUAL "BAREMETAL")
     swift_baremetal_c_compile_flags(baremetal_flags)
     list(APPEND result ${baremetal_flags})
