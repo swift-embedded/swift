@@ -4906,7 +4906,13 @@ namespace {
 
 // A statically-allocated pool.  It's zero-initialized, so this
 // doesn't cost us anything in binary size.
-LLVM_ALIGNAS(alignof(void*)) static char InitialAllocationPool[64*1024];
+#ifndef _BAREMETAL
+#define INITIAL_ALLOCATION_POOL_SIZE 64*1024
+#else
+#define INITIAL_ALLOCATION_POOL_SIZE 16*1024
+#endif
+LLVM_ALIGNAS(alignof(void*)) static char InitialAllocationPool[INITIAL_ALLOCATION_POOL_SIZE];
+
 static std::atomic<PoolRange>
 AllocationPool{PoolRange{InitialAllocationPool,
                          sizeof(InitialAllocationPool)}};
