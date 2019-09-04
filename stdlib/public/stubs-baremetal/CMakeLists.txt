@@ -12,6 +12,10 @@ foreach(arch IN LISTS SWIFT_SDK_BAREMETAL_ARCHITECTURES)
   set(swift_stubs_baremetal_objects_dir ${CMAKE_CURRENT_BINARY_DIR}/${arch})
   set(swift_stubs_baremetal_objects)
 
+  swift_baremetal_gcc_find("gcc" arm-none-eabi-gcc)
+  swift_baremetal_gcc_find("ar" arm-none-eabi-ar)
+  swift_baremetal_gcc_find("ranlib" arm-none-eabi-ranlib)
+
   # create subdir
   add_custom_command_target(objects_dir_target
     COMMAND "${CMAKE_COMMAND}"
@@ -24,7 +28,7 @@ foreach(arch IN LISTS SWIFT_SDK_BAREMETAL_ARCHITECTURES)
     set(object_path ${swift_stubs_baremetal_objects_dir}/${source_file}-${arch}.o)
     add_custom_command_target(
       unused_var
-      COMMAND arm-none-eabi-gcc
+      COMMAND ${arm-none-eabi-gcc}
       ${swift_stubs_flags} -march=${SWIFT_SDK_BAREMETAL_ARCH_${arch}_ALT_SPELLING} -mthumb
         -c ${full_path}
         -o ${object_path}
@@ -40,9 +44,9 @@ foreach(arch IN LISTS SWIFT_SDK_BAREMETAL_ARCHITECTURES)
 
   add_custom_command_target(
     library_target
-    COMMAND arm-none-eabi-ar q ${swift_stubs_baremetal_lib_name}
+    COMMAND ${arm-none-eabi-ar} q ${swift_stubs_baremetal_lib_name}
     ${swift_stubs_baremetal_objects}
-    COMMAND arm-none-eabi-ranlib ${swift_stubs_baremetal_lib_name}
+    COMMAND ${arm-none-eabi-ranlib} ${swift_stubs_baremetal_lib_name}
     CUSTOM_TARGET_NAME "swiftStdlibStubsBaremetal-${arch}"
     DEPENDS ${swift_stubs_baremetal_objects}
     OUTPUT ${swift_stubs_baremetal_lib_name}

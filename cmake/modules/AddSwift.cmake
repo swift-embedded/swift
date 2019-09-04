@@ -1410,10 +1410,11 @@ function(_add_swift_library_single target name)
   endif()
 
   if(${SWIFTLIB_SINGLE_SDK} STREQUAL BAREMETAL AND target_static)
+    swift_baremetal_gcc_find("ranlib" arm-none-eabi-ranlib)
     add_custom_command(
       TARGET ${target_static} POST_BUILD
       COMMAND cp ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.a ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.no-index.a
-      COMMAND arm-none-eabi-ranlib ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.a
+      COMMAND ${arm-none-eabi-ranlib} ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.a
       VERBATIM)
 
     swift_install_in_component(${SWIFTLIB_SINGLE_INSTALL_IN_COMPONENT}
