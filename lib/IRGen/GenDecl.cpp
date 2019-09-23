@@ -3126,15 +3126,6 @@ llvm::Constant *IRGenModule::emitProtocolConformances() {
   for (const auto &record : ProtocolConformances)
     emitProtocolConformance(record);
 
-    if (record.conformance->isBehaviorConformance())
-      continue;
-
-    anyReflectedConformances = true;
-  }
-
-  if (!anyReflectedConformances)
-    return nullptr;
-
   auto emitConformanceRecord = [&](ConstantArrayBuilder& records, const ConformanceDescription& record) {
     auto conformance = record.conformance;
     auto entity = LinkEntity::forProtocolConformanceDescriptor(conformance);
@@ -3150,12 +3141,6 @@ llvm::Constant *IRGenModule::emitProtocolConformances() {
     auto descriptorArray = builder.beginArray(RelativeAddressTy);
 
     for (const auto &record : ProtocolConformances) {
-      auto conformance = record.conformance;
-
-      // Behavior conformances cannot be reflected.
-      if (conformance->isBehaviorConformance())
-        continue;
-
       emitConformanceRecord(descriptorArray, record);
     }
 
@@ -3173,12 +3158,6 @@ llvm::Constant *IRGenModule::emitProtocolConformances() {
     return var;
   } else {
     for (const auto &record : ProtocolConformances) {
-      auto conformance = record.conformance;
-
-      // Behavior conformances cannot be reflected.
-      if (conformance->isBehaviorConformance())
-        continue;
-
       auto descriptorArray = builder.beginArray(RelativeAddressTy);
       emitConformanceRecord(descriptorArray, record);
       auto entity = LinkEntity::forProtocolConformanceDescriptor(record.conformance);
@@ -3231,7 +3210,7 @@ llvm::Constant *IRGenModule::emitTypeMetadataRecords() {
 
   auto emitMetadataRecord = [&](
                               llvm::GlobalVariable& array,
-                              NominalTypeDecl& type,
+                              GenericTypeDecl& type,
                               unsigned idx) {
     auto reference = getTypeEntityReference(&type);
 
@@ -3247,6 +3226,15 @@ llvm::Constant *IRGenModule::emitTypeMetadataRecords() {
     auto record = llvm::ConstantStruct::get(TypeMetadataRecordTy,
                                             recordFields);
     return record;
+  };
+
+  auto getLinkEntity = [&](GenericTypeDecl* type) {
+    if (auto nominal = dyn_cast<NominalTypeDecl>(type))
+      return LinkEntity::forNominalTypeDescriptor(nominal);
+    else if (auto opaque = dyn_cast<OpaqueTypeDecl>(type))
+      return LinkEntity::forOpaqueTypeDescriptor(opaque);
+    else
+      llvm_unreachable("unexpected type declaration");
   };
 
   if (!IRGen.Opts.MetadataSections) {
@@ -3280,7 +3268,7 @@ llvm::Constant *IRGenModule::emitTypeMetadataRecords() {
   } else {
     for (auto type : RuntimeResolvableTypes) {
       auto arrayTy = llvm::ArrayType::get(TypeMetadataRecordTy, 1);
-      auto linkEntity = LinkEntity::forNominalTypeDescriptor(type);
+      auto linkEntity = getLinkEntity(type);
       auto mangledName = linkEntity.mangleAsString();
       auto array = new llvm::GlobalVariable(Module, arrayTy,
                                           /*isConstant*/ true,
