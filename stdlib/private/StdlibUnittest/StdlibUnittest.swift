@@ -13,7 +13,7 @@
 
 import SwiftPrivate
 #if !os(none)
-import SwiftPrivatePthreadExtras
+import SwiftPrivateThreadExtras
 import SwiftPrivateLibcExtras
 #endif
 
@@ -758,7 +758,7 @@ func _printDebuggingAdvice(_ fullTestName: String) {
     invocation.insert(String(cString: buffer), at: 0)
     free(buffer)
   }
-#elseif !os(None)
+#elseif !os(none)
   let interpreter = getenv("SWIFT_INTERPRETER")
   if interpreter != nil {
     if let interpreterCmd = String(validatingUTF8: interpreter!) {
