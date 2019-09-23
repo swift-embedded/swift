@@ -591,7 +591,7 @@ namespace {
       auto var = cast<llvm::GlobalVariable>(addr);
       
       var->setConstant(true);
-      auto linkEntity = LinkEntity::forAnonymousDescriptor(DC);
+      auto linkEntity = LinkEntity::forAnonymousDescriptor(getInnermostDeclContext());
       auto sectionSuffix = linkEntity.mangleAsString();
       IGM.setTrueConstGlobal(var, sectionSuffix);
     }
