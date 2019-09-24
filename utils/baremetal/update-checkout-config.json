@@ -49,7 +49,7 @@
     },
     "default-branch-scheme": "embedded-5.0-branch",
     "branch-schemes": {
-        "swift-5.1-branch" : {
+        "embedded-5.1-branch" : {
             "aliases": ["embedded-5.1-branch"],
             "repos": {
                 "llvm": "swift-5.1-branch",
