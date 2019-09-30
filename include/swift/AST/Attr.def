@@ -497,6 +497,12 @@ DECL_ATTR(_projectedValueProperty, ProjectedValueProperty,
   ABIStableToAdd | ABIStableToRemove | APIStableToAdd | APIStableToRemove,
   89)
 
+DECL_ATTR(differentiable, Differentiable,
+  OnAccessor | OnConstructor | OnFunc | OnVar | OnSubscript | LongAttribute |
+  AllowMultipleAttributes |
+  ABIStableToAdd | ABIStableToRemove | APIStableToAdd | APIStableToRemove,
+  90)
+
 SIMPLE_DECL_ATTR(IBSegueAction, IBSegueAction,
   OnFunc |
   ABIStableToAdd | ABIStableToRemove | APIStableToAdd | APIStableToRemove,
