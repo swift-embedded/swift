@@ -1075,6 +1075,9 @@ static bool ParseIRGenArgs(IRGenOptions &Opts, ArgList &Args,
     Opts.StackPromotionSizeLimit = limit;
   }
 
+  Opts.FunctionSections = Args.hasArg(OPT_function_sections);
+  Opts.DataSections = Args.hasArg(OPT_data_sections);
+
   if (Args.hasArg(OPT_autolink_force_load))
     Opts.ForceLoadSymbolName = Args.getLastArgValue(OPT_module_link_name);
 

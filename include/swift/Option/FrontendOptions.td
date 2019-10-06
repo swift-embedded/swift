@@ -300,6 +300,12 @@ def disable_reflection_names : Flag<["-"], "disable-reflection-names">,
   HelpText<"Disable emission of names of stored properties and enum cases in"
            "reflection metadata">;
 
+def function_sections: Flag<["-"], "function-sections">,
+  HelpText<"Emit functions to separate sections.">;
+
+def data_sections: Flag<["-"], "data-sections">,
+  HelpText<"Emit data to separate sections.">;
+
 def stack_promotion_checks : Flag<["-"], "emit-stack-promotion-checks">,
   HelpText<"Emit runtime checks for correct stack promotion of objects.">;
 
