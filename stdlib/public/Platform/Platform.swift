@@ -136,6 +136,10 @@ public func snprintf(ptr: UnsafeMutablePointer<Int8>, _ len: Int, _ format: Unsa
     return vsnprintf(ptr, len, format, va_args)
   }
 }
+#elseif os(none)
+public var stdin: UnsafeMutablePointer<FILE>? { _swift_stdlib_stdin_get().bindMemory(to: FILE.self, capacity: 1) }
+public var stdout: UnsafeMutablePointer<FILE>? { return _swift_stdlib_stdout_get().bindMemory(to: FILE.self, capacity: 1) }
+public var stderr: UnsafeMutablePointer<FILE>? { return _swift_stdlib_stderr_get().bindMemory(to: FILE.self, capacity: 1) }
 #elseif os(Windows)
 public var stdin: UnsafeMutablePointer<FILE> { return __acrt_iob_func(0) }
 public var stdout: UnsafeMutablePointer<FILE> { return __acrt_iob_func(1) }
