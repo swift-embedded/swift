@@ -45,7 +45,7 @@
         "indexstore-db": {
             "remote": { "id": "apple/indexstore-db" } },
         "sourcekit-lsp": {
-            "remote": { "id": "apple/sourcekit-lsp" } }
+            "remote": { "id": "swift-embedded/sourcekit-lsp" } }
     },
     "default-branch-scheme": "embedded-5.0-branch",
     "branch-schemes": {
@@ -72,7 +72,7 @@
                 "clang-tools-extra": "swift-5.1-branch",
                 "libcxx": "swift-5.1-branch",
                 "indexstore-db": "swift-5.1-branch",
-                "sourcekit-lsp": "swift-5.1-branch"
+                "sourcekit-lsp": "embedded-5.1"
             }
         },
         "embedded-5.0-branch" : {
