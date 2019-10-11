@@ -56,9 +56,23 @@ __swift_size_t swift::_swift_stdlib_fwrite_stdout(const void *ptr,
 
 #if defined(_BAREMETAL)
 extern "C" {
-    int _write (int fd, const void *buf, size_t count);
-    int _read (int fd, const void *buf, size_t count);
-    int _close (int fd);
+int _write (int fd, const void *buf, size_t count);
+int _read (int fd, const void *buf, size_t count);
+int _close (int fd);
+}
+SWIFT_RUNTIME_STDLIB_INTERNAL
+void* swift::_swift_stdlib_stdin_get() {
+    return (void*)stdin;
+}
+
+SWIFT_RUNTIME_STDLIB_INTERNAL
+void* swift::_swift_stdlib_stdout_get() {
+    return (void*)stdout;
+}
+
+SWIFT_RUNTIME_STDLIB_INTERNAL
+void* swift::_swift_stdlib_stderr_get() {
+    return (void*)stderr;
 }
 #endif /* defined(_BAREMETAL) */
 
