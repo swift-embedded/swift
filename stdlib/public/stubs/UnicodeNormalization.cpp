@@ -16,11 +16,9 @@
 
 #include "../SwiftShims/UnicodeShims.h"
 
-#ifndef _BAREMETAL
-
 #include <stdint.h>
 
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(_BAREMETAL)
 
 // Declare a few external functions to avoid a dependency on ICU headers.
 extern "C" {
@@ -91,7 +89,7 @@ double u_getNumericValue(UChar32);
 
 #endif
 
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) && !defined(_BAREMETAL)
 #include "swift/Basic/Lazy.h"
 #include "swift/Runtime/Config.h"
 #include "swift/Runtime/Debug.h"
@@ -311,6 +309,3 @@ double swift::__swift_stdlib_u_getNumericValue(__swift_stdlib_UChar32 c) {
 #if defined(__MACH__)
 asm(".linker_option \"-licucore\"\n");
 #endif // defined(__MACH__)
-
-
-#endif // defined(_BAREMETAL)

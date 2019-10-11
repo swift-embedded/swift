@@ -15,7 +15,6 @@ set(swift_stubs_objc_sources
     Reflection.mm
     SwiftNativeNSXXXBase.mm.gyb)
 set(swift_stubs_unicode_normalization_sources
-    UnicodeNormalization-BareMetal.cpp
     UnicodeNormalization.cpp)
 set(LLVM_OPTIONAL_SOURCES
     ${swift_stubs_objc_sources}
