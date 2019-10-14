@@ -1,4 +1,4 @@
-# Swift for Embedded Systems
+# Swift for Embedded Systems [![Build Status](https://jenkins.dragomirecky.com/job/swift-embedded/job/swift/badge/icon)](https://jenkins.dragomirecky.com/job/swift-embedded/job/swift/)
 
 This is a fork of the [apple/swift](https://github.com/apple/swift) repository, enabling Swift to be used on bare metal.
 
