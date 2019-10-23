@@ -29,7 +29,7 @@ Also, to make building an embedded application as simple as possible, I have cre
 2. Activate the toolchain with:
 
     ```bash
-    export TOOLCHAINS=baremetal-toolchain.YYYYMMDD
+    export TOOLCHAINS=baremetal.YYYYMMDD
     ```
 
 3. Check that `swift` and other command-line utilities now reference the newly downloaded toolchain.
