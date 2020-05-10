@@ -69,6 +69,10 @@ if(SWIFT_ENABLE_EXPERIMENTAL_DIFFERENTIABLE_PROGRAMMING AND SWIFT_BUILD_STDLIB)
   add_subdirectory(Differentiation)
 endif()
 
+if(SWIFT_BUILD_STDLIB AND "BAREMETAL" IN_LIST SWIFT_CONFIGURED_SDKS)
+  add_subdirectory(stubs-baremetal)
+endif()
+
 if(SWIFT_BUILD_STDLIB OR SWIFT_BUILD_REMOTE_MIRROR)
   add_subdirectory(Reflection)
   add_subdirectory(SwiftRemoteMirror)

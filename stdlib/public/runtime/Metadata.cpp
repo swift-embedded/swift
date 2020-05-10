@@ -41,6 +41,8 @@
 // Avoid defining macro max(), min() which conflict with std::max(), std::min()
 #define NOMINMAX
 #include <windows.h>
+#elif defined(_BAREMETAL)
+#include <unistd.h>
 #else
 #include <sys/mman.h>
 #include <unistd.h>
@@ -5068,7 +5070,15 @@ namespace {
 
 // A statically-allocated pool.  It's zero-initialized, so this
 // doesn't cost us anything in binary size.
-alignas(void *) static char InitialAllocationPool[64 * 1024];
+#ifndef _BAREMETAL
+#define INITIAL_ALLOCATION_POOL_SIZE 64*1024
+#define INITIAL_ALLOCATION_POOL_SECTION
+#else
+#define INITIAL_ALLOCATION_POOL_SIZE 16*1024
+#define INITIAL_ALLOCATION_POOL_SECTION __attribute__((section("swift5_allocation_pool")))
+#endif
+alignas(void *) static char InitialAllocationPool[INITIAL_ALLOCATION_POOL_SIZE] INITIAL_ALLOCATION_POOL_SECTION;
+
 static std::atomic<PoolRange>
 AllocationPool{PoolRange{InitialAllocationPool,
                          sizeof(InitialAllocationPool)}};

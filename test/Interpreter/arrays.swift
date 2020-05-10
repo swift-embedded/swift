@@ -131,6 +131,14 @@ class Spoon: Runcible {
   let x: Int
   init(x: Int) { self.x = x }
 }
+#if os(none)
+extension Spoon : CustomStringConvertible {
+  var description: String {
+    return "Spoon(\n\tx: \(x))"
+  }
+}
+#endif
+
 let runceArray: [Runcible] = [Spoon(x: 219)]
 // CHECK:      1 element
 // CHECK-NEXT:   {{.*}}Spoon

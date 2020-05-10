@@ -1,3 +1,5 @@
+include (SwiftBareMetalSupport)
+
 function(swift_configure_lit_site_cfg source_path destination_path installed_name)
   if (CMAKE_CFG_INTDIR STREQUAL ".")
     set(SWIFT_BUILD_MODE ".")
@@ -75,6 +77,7 @@ function(get_test_dependencies SDK result_var_name)
      ("${SDK}" STREQUAL "FREEBSD") OR
      ("${SDK}" STREQUAL "ANDROID") OR
      ("${SDK}" STREQUAL "WINDOWS") OR
+     ("${SDK}" STREQUAL "BAREMETAL") OR
      ("${SDK}" STREQUAL "HAIKU"))
     # No extra dependencies.
   else()
@@ -162,6 +165,10 @@ if(NOT "${COVERAGE_DB}" STREQUAL "")
 endif()
 
 foreach(SDK ${SWIFT_SDKS})
+  if("${SDK}" STREQUAL "BAREMETAL")
+    continue()
+  endif()
+
   foreach(ARCH ${SWIFT_SDK_${SDK}_ARCHITECTURES})
     # Configure variables for this subdirectory.
     set(VARIANT_SUFFIX "-${SWIFT_SDK_${SDK}_LIB_SUBDIR}-${ARCH}")
@@ -229,7 +236,7 @@ _Block_release(void) { }\n")
       OUTPUT_NAME BlocksRuntime)
     list(APPEND test_dependencies BlocksRuntimeStub${VARIANT_SUFFIX})
 
-    if(SWIFT_BUILD_STDLIB AND SWIFT_INCLUDE_TESTS)
+    if(SWIFT_BUILD_STDLIB AND SWIFT_INCLUDE_TESTS AND NOT "${SDK}" STREQUAL "BAREMETAL")
       list(APPEND test_dependencies
           "swift-test-stdlib-${SWIFT_SDK_${SDK}_LIB_SUBDIR}")
       list(APPEND test_dependencies

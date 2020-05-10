@@ -255,6 +255,13 @@ set(SWIFT_ANDROID_DEPLOY_DEVICE_PATH "" CACHE STRING
   "Path on an Android device where build products will be pushed. These are used when running the test suite against the device")
 
 #
+# User-configurable BareMetal specific options.
+#
+
+set(SWIFT_BAREMETAL_TOOLCHAIN_PATH "" CACHE STRING
+  "Path to the directory with required toolchain (currently customized arm-none-eabi).")
+
+#
 # User-configurable ICU specific options for Android, FreeBSD, Linux and Haiku.
 #
 
@@ -456,7 +463,7 @@ if(MSVC OR "${CMAKE_SIMULATE_ID}" STREQUAL MSVC)
 endif()
 
 if(CMAKE_C_COMPILER_ID MATCHES Clang)
-  add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:-Werror=gnu>)
+  #add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:-Werror=gnu>)
 endif()
 
 option(SWIFT_BUILD_SYNTAXPARSERLIB "Build the Swift Syntax Parser library" TRUE)
@@ -815,6 +822,14 @@ if(swift_build_windows AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
     set(SWIFT_SDK_WINDOWS_ARCHITECTURES aarch64;armv7;i686;x86_64)
   endif()
   configure_sdk_windows("Windows" "msvc" "${SWIFT_SDK_WINDOWS_ARCHITECTURES}")
+endif()
+
+is_sdk_requested(BAREMETAL swift_build_baremetal)
+if(swift_build_baremetal)
+  if("${SWIFT_SDK_BAREMETAL_ARCHITECTURES}" STREQUAL "")
+    set(SWIFT_SDK_BAREMETAL_ARCHITECTURES thumbv7m;thumbv7em)
+  endif()
+  configure_sdk_baremetal("Baremetal" "thumbv7m;thumbv7em" "${SWIFT_BAREMETAL_TOOLCHAIN_PATH}")
 endif()
 
 if("${SWIFT_SDKS}" STREQUAL "")

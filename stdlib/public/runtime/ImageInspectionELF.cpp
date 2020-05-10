@@ -22,7 +22,11 @@
 
 #include "ImageInspection.h"
 #include "ImageInspectionELF.h"
+#ifndef _BAREMETAL
 #include <dlfcn.h>
+#else
+#include <cassert>
+#endif
 
 using namespace swift;
 
@@ -132,6 +136,7 @@ void swift_addNewDSOImage(const void *addr) {
 }
 
 int swift::lookupSymbol(const void *address, SymbolInfo *info) {
+#if !defined(_BAREMETAL)
   Dl_info dlinfo;
   if (dladdr(address, &dlinfo) == 0) {
     return 0;
@@ -142,6 +147,10 @@ int swift::lookupSymbol(const void *address, SymbolInfo *info) {
   info->symbolName.reset(dlinfo.dli_sname);
   info->symbolAddress = dlinfo.dli_saddr;
   return 1;
+#else
+  assert(false && "lookupSymbol not supported");
+  return 0;
+#endif
 }
 
 // This is only used for backward deployment hooks, which we currently only support for

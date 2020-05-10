@@ -2,6 +2,7 @@ include(SwiftList)
 include(SwiftXcodeSupport)
 include(SwiftWindowsSupport)
 include(SwiftAndroidSupport)
+include(SwiftBareMetalSupport)
 
 # SWIFTLIB_DIR is the directory in the build tree where Swift resource files
 # should be placed.  Note that $CMAKE_CFG_INTDIR expands to "." for
@@ -337,6 +338,13 @@ function(_add_variant_c_compile_flags)
     foreach(path ${${CFLAGS_ARCH}_INCLUDE})
       list(APPEND result "\"${CMAKE_INCLUDE_FLAG_C}${path}\"")
     endforeach()
+  elseif("${CFLAGS_SDK}" STREQUAL "BAREMETAL")
+    swift_baremetal_c_compile_flags(baremetal_flags)
+    list(APPEND result ${baremetal_flags})
+    swift_baremetal_include_for_arch("${CFLAGS_ARCH}" "${CFLAGS_ARCH}_INCLUDES")
+    foreach(path IN LISTS ${CFLAGS_ARCH}_INCLUDES)
+      list(APPEND result "-I${path}")
+    endforeach()
   endif()
 
   set(ICU_UC_INCLUDE_DIR ${SWIFT_${CFLAGS_SDK}_${CFLAGS_ARCH}_ICU_UC_INCLUDE})
@@ -393,6 +401,11 @@ function(_add_variant_swift_compile_flags
     endforeach()
   endif()
 
+  if("${sdk}" STREQUAL "BAREMETAL")
+    swift_baremetal_swift_compile_flags(baremetal_flags)
+    list(APPEND result ${baremetal_flags})
+  endif()
+
   if(NOT BUILD_STANDALONE)
     list(APPEND result "-resource-dir" "${SWIFTLIB_DIR}")
   endif()
@@ -404,7 +417,11 @@ function(_add_variant_swift_compile_flags
 
   is_build_type_optimized("${build_type}" optimized)
   if(optimized)
-    list(APPEND result "-O")
+    if("${sdk}" STREQUAL "BAREMETAL")
+      list(APPEND result "-Osize")
+    else()
+      list(APPEND result "-O")
+    endif()
   else()
     list(APPEND result "-Onone")
   endif()
@@ -499,6 +516,11 @@ function(_add_variant_link_flags)
     swift_android_lib_for_arch(${LFLAGS_ARCH} ${LFLAGS_ARCH}_LIB)
     foreach(path IN LISTS ${LFLAGS_ARCH}_LIB)
       list(APPEND library_search_directories ${path})
+    endforeach()
+  elseif("${LFLAGS_SDK}" STREQUAL "BAREMETAL")
+    swift_baremetal_lib_for_arch(${LFLAGS_ARCH} ${LFLAGS_ARCH}_LIB)
+    foreach (path IN LISTS ${LFLAGS_ARCH}_LIB)
+      list(APPEND library_search_directories "${path}")
     endforeach()
   else()
     # If lto is enabled, we need to add the object path flag so that the LTO code
@@ -640,8 +662,9 @@ function(_add_swift_lipo_target)
         DEPENDS ${source_targets})
   else()
     # We don't know how to create fat binaries for other platforms.
+    list(GET source_binaries 0 selected_source_binary)
     add_custom_command_target(unused_var
-        COMMAND "${CMAKE_COMMAND}" "-E" "copy" "${source_binaries}" "${LIPO_OUTPUT}"
+        COMMAND "${CMAKE_COMMAND}" "-E" "copy" "${selected_source_binary}" "${LIPO_OUTPUT}"
         CUSTOM_TARGET_NAME "${LIPO_TARGET}"
         OUTPUT "${LIPO_OUTPUT}"
         DEPENDS ${source_targets})
@@ -800,6 +823,10 @@ function(_add_swift_library_single target name)
   precondition(SWIFTLIB_SINGLE_SDK MESSAGE "Should specify an SDK")
   precondition(SWIFTLIB_SINGLE_ARCHITECTURE MESSAGE "Should specify an architecture")
   precondition(SWIFTLIB_SINGLE_INSTALL_IN_COMPONENT MESSAGE "INSTALL_IN_COMPONENT is required")
+
+  if("${SWIFTLIB_SINGLE_SDK}" STREQUAL "BAREMETAL")
+    unset(SWIFTLIB_SINGLE_SHARED)
+  endif()
 
   if(NOT SWIFTLIB_SINGLE_SHARED AND
      NOT SWIFTLIB_SINGLE_STATIC AND
@@ -1442,6 +1469,21 @@ function(_add_swift_library_single target name)
         ${SWIFTLIB_SINGLE_PRIVATE_LINK_LIBRARIES})
   endif()
 
+  if(${SWIFTLIB_SINGLE_SDK} STREQUAL BAREMETAL AND target_static)
+    swift_baremetal_gcc_find("ranlib" arm-none-eabi-ranlib)
+    add_custom_command(
+      TARGET ${target_static} POST_BUILD
+      COMMAND cp ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.a ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.no-index.a
+      COMMAND ${arm-none-eabi-ranlib} ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.a
+      VERBATIM)
+
+    swift_install_in_component(
+      FILES ${SWIFTSTATICLIB_DIR}/${SWIFTLIB_SINGLE_SUBDIR}/lib${name}.a
+      DESTINATION "lib${LLVM_LIBDIR_SUFFIX}/swift_static/${SWIFT_SDK_BAREMETAL_LIB_SUBDIR}/${SWIFTLIB_SINGLE_ARCHITECTURE}"
+      COMPONENT ${SWIFTLIB_SINGLE_INSTALL_IN_COMPONENT}
+      PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+  endif()
+
   # Do not add code here.
 endfunction()
 
@@ -1612,6 +1654,10 @@ endfunction()
 # SWIFT_MODULE_DEPENDS_HAIKU
 #   Swift modules this library depends on when built for Haiku.
 #
+# SWIFT_MODULE_DEPENDS_BAREMETAL
+#   Swift modules this library depends on when built
+#   for running without OS (baremetal).
+#
 # FRAMEWORK_DEPENDS
 #   System frameworks this library depends on.
 #
@@ -1721,6 +1767,8 @@ function(add_swift_target_library name)
         SWIFT_MODULE_DEPENDS_TVOS
         SWIFT_MODULE_DEPENDS_WATCHOS
         SWIFT_MODULE_DEPENDS_WINDOWS
+        SWIFT_MODULE_DEPENDS_BAREMETAL
+        SOURCES_OSX
         TARGET_SDKS)
 
   cmake_parse_arguments(SWIFTLIB
@@ -1808,6 +1856,8 @@ function(add_swift_target_library name)
     if(${sdk} STREQUAL OSX)
       list(APPEND swiftlib_module_depends_flattened
            ${SWIFTLIB_SWIFT_MODULE_DEPENDS_OSX})
+      list(APPEND SWIFTLIB_SOURCES
+           ${SWIFTLIB_SOURCES_OSX})
     elseif(${sdk} STREQUAL IOS OR ${sdk} STREQUAL IOS_SIMULATOR)
       list(APPEND swiftlib_module_depends_flattened
            ${SWIFTLIB_SWIFT_MODULE_DEPENDS_IOS})
@@ -1832,6 +1882,9 @@ function(add_swift_target_library name)
     elseif(${sdk} STREQUAL WINDOWS)
       list(APPEND swiftlib_module_depends_flattened
            ${SWIFTLIB_SWIFT_MODULE_DEPENDS_WINDOWS})
+    elseif(${sdk} STREQUAL BAREMETAL)
+      list(APPEND swiftlib_module_depends_flattened
+           ${SWIFTLIB_SWIFT_MODULE_DEPENDS_BAREMETAL})
     endif()
 
     # Collect architecture agnostic SDK framework dependencies

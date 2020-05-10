@@ -40,6 +40,7 @@ static const StringRef SupportedConditionalCompilationOSs[] = {
   "Cygwin",
   "Haiku",
   "WASI",
+  "none",
 };
 
 static const StringRef SupportedConditionalCompilationArches[] = {
@@ -250,6 +251,9 @@ std::pair<bool, bool> LangOptions::setTarget(llvm::Triple triple) {
     break;
   case llvm::Triple::WASI:
     addPlatformConditionValue(PlatformConditionKind::OS, "WASI");
+    break;
+  case llvm::Triple::UnknownOS:
+    addPlatformConditionValue(PlatformConditionKind::OS, "none");
     break;
   default:
     UnsupportedOS = true;

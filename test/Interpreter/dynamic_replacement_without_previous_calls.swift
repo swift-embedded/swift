@@ -6,6 +6,8 @@
 // RUN: %target-run %t/main %t/%target-library-name(Module1) %t/%target-library-name(Module2)
 
 // REQUIRES: executable_test
+// No dynamic linking on baremetal
+// UNSUPPORTED: OS=none-eabi
 
 import Module1
 

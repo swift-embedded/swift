@@ -17,6 +17,7 @@
 #elseif os(Windows)
   import MSVCRT
   import WinSDK
+#elseif os(none)
 #else
 #error("Unsupported platform")
 #endif
@@ -35,6 +36,7 @@
   #endif
 #elseif os(Windows)
   let hStdlibCore: HMODULE = GetModuleHandleA("swiftCore.dll")!
+#elseif os(none)
 #else
   #error("Unsupported platform")
 #endif
@@ -43,6 +45,8 @@ public func pointerToSwiftCoreSymbol(name: String) -> UnsafeMutableRawPointer? {
 #if os(Windows)
   return unsafeBitCast(GetProcAddress(hStdlibCore, name),
                        to: UnsafeMutableRawPointer?.self)
+#elseif os(none)
+  return nil
 #else
   return dlsym(RTLD_DEFAULT, name)
 #endif

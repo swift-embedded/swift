@@ -165,6 +165,11 @@ swift::getIRTargetOptions(IRGenOptions &Opts, ASTContext &Ctx) {
   TargetOpts.DataSections = Opts.DataSections;
   TargetOpts.FunctionSections = Opts.FunctionSections;
 
+  if (Opts.MetadataSections) {
+    // TODO: Baremetal
+    TargetOpts.ExceptionModel = llvm::ExceptionHandling::None;
+  }
+
   auto *Clang = static_cast<ClangImporter *>(Ctx.getClangModuleLoader());
   clang::TargetOptions &ClangOpts = Clang->getTargetInfo().getTargetOpts();
   return std::make_tuple(TargetOpts, ClangOpts.CPU, ClangOpts.Features, ClangOpts.Triple);

@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(_BAREMETAL)
 
 // Declare a few external functions to avoid a dependency on ICU headers.
 extern "C" {
@@ -89,7 +89,7 @@ double u_getNumericValue(UChar32);
 
 #endif
 
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) && !defined(_BAREMETAL)
 #include "swift/Basic/Lazy.h"
 #include "swift/Runtime/Config.h"
 #include "swift/Runtime/Debug.h"

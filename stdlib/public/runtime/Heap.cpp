@@ -42,6 +42,10 @@ using namespace swift;
 #elif defined(_WIN32)
 #  define MALLOC_ALIGN_MASK 7
 
+#elif defined(_BAREMETAL)
+#  define _MAX(a, b) ((a) > (b) ? (a) : (b))
+#  define MALLOC_ALIGN_MASK (_MAX(alignof(void*), alignof(double)) - 1)
+
 #else
 // Unknown alignment, but the standard requires alignment suitable for the largest
 // standard types.

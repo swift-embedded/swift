@@ -331,6 +331,44 @@ macro(configure_sdk_unix name architectures)
   _report_sdk("${prefix}")
 endmacro()
 
+macro(configure_sdk_baremetal name architectures toolchain_path)
+  # Note: this has to be implemented as a macro because it sets global
+  # variables.
+
+  string(TOUPPER ${name} prefix)
+
+  set(SWIFT_SDK_${prefix}_NAME "${name}")
+  set(SWIFT_SDK_${prefix}_VERSION "don't use")
+  set(SWIFT_SDK_${prefix}_BUILD_NUMBER "don't use")
+  set(SWIFT_SDK_${prefix}_DEPLOYMENT_VERSION "")
+  set(SWIFT_SDK_${prefix}_LIB_SUBDIR "baremetal")
+  set(SWIFT_SDK_${prefix}_VERSION_MIN_NAME "")
+  set(SWIFT_SDK_${prefix}_TRIPLE_NAME "arm-none-eabi")
+  set(SWIFT_SDK_${prefix}_ARCHITECTURES "${architectures}")
+  set(SWIFT_SDK_${prefix}_OBJECT_FORMAT "ELF")
+
+  foreach(arch ${architectures})
+    if(${arch} STREQUAL thumbv7m)
+      set(SWIFT_SDK_${prefix}_ARCH_${arch}_ALT_SPELLING armv7-m)
+    elseif(${arch} STREQUAL thumbv7em)
+      set(SWIFT_SDK_${prefix}_ARCH_${arch}_ALT_SPELLING armv7e-m)
+    else()
+      message(FATAL_ERROR "unknown architecture ${arch}")
+    endif()
+
+    set(SWIFT_SDK_${prefix}_ARCH_${arch}_TRIPLE "${arch}-unknown-none-eabi")
+    set(SWIFT_SDK_${prefix}_ARCH_${arch}_PATH "${toolchain_path}")
+    set(SWIFT_SDK_${prefix}_ARCH_${arch}_LINKER "${toolchain_path}/bin/ld")
+    set(SWIFT_SDK_${prefix}_ARCH_${arch}_LIBC_INCLUDE_DIRECTORY "${toolchain_path}/arm-none-eabi/include")
+    set(SWIFT_SDK_${prefix}_ARCH_${arch}_LIBC_ARCHITECTURE_INCLUDE_DIRECTORY "${toolchain_path}/arm-none-eabi/include")
+  endforeach()
+
+  # Add this to the list of known SDKs.
+  list(APPEND SWIFT_CONFIGURED_SDKS "${prefix}")
+
+  _report_sdk("${prefix}")
+endmacro()
+
 macro(configure_sdk_windows name environment architectures)
   # Note: this has to be implemented as a macro because it sets global
   # variables.

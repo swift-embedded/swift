@@ -54,10 +54,32 @@ __swift_size_t swift::_swift_stdlib_fwrite_stdout(const void *ptr,
     return fwrite(ptr, size, nitems, stdout);
 }
 
+#if defined(_BAREMETAL)
+extern "C" {
+int _write (int fd, const void *buf, size_t count);
+int _read (int fd, const void *buf, size_t count);
+int _close (int fd);
+}
+SWIFT_RUNTIME_STDLIB_INTERNAL
+void* swift::_swift_stdlib_stdin_get() {
+    return (void*)stdin;
+}
+
+SWIFT_RUNTIME_STDLIB_INTERNAL
+void* swift::_swift_stdlib_stdout_get() {
+    return (void*)stdout;
+}
+
+SWIFT_RUNTIME_STDLIB_INTERNAL
+void* swift::_swift_stdlib_stderr_get() {
+    return (void*)stderr;
+}
+#endif /* defined(_BAREMETAL) */
+
 SWIFT_RUNTIME_STDLIB_SPI
 __swift_ssize_t
 swift::_swift_stdlib_read(int fd, void *buf, __swift_size_t nbyte) {
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(_BAREMETAL)
   return _read(fd, buf, nbyte);
 #else
   return read(fd, buf, nbyte);
@@ -67,7 +89,7 @@ swift::_swift_stdlib_read(int fd, void *buf, __swift_size_t nbyte) {
 SWIFT_RUNTIME_STDLIB_SPI
 __swift_ssize_t
 swift::_swift_stdlib_write(int fd, const void *buf, __swift_size_t nbyte) {
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(_BAREMETAL)
   return _write(fd, buf, nbyte);
 #else
   return write(fd, buf, nbyte);
@@ -76,7 +98,7 @@ swift::_swift_stdlib_write(int fd, const void *buf, __swift_size_t nbyte) {
 
 SWIFT_RUNTIME_STDLIB_SPI
 int swift::_swift_stdlib_close(int fd) {
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(_BAREMETAL)
   return _close(fd);
 #else
   return close(fd);

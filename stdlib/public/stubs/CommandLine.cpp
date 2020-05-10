@@ -95,6 +95,24 @@ char ** _swift_stdlib_getUnsafeArgvArgc(int *outArgLen) {
 
   return outBuf;
 }
+#elif defined (_BAREMETAL)
+extern "C" char** _user_get_commandline_args(int* outArgLen) __attribute__((weak));
+SWIFT_RUNTIME_STDLIB_API
+char ** _swift_stdlib_getUnsafeArgvArgc(int *outArgLen) {
+  assert(outArgLen != nullptr);
+
+  if (_swift_stdlib_ProcessOverrideUnsafeArgv) {
+    *outArgLen = _swift_stdlib_ProcessOverrideUnsafeArgc;
+    return _swift_stdlib_ProcessOverrideUnsafeArgv;
+  }
+
+  if (_user_get_commandline_args != nullptr) {
+    return _user_get_commandline_args(outArgLen);
+  }
+
+  outArgLen = 0;
+  return nullptr;
+}
 #elif defined (_WIN32)
 #include <stdlib.h>
 

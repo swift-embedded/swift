@@ -213,6 +213,9 @@ class BuildScriptInvocation(object):
             elif args.android_arch == "aarch64":
                 args.stdlib_deployment_targets.append(
                     StdlibDeploymentTarget.Android.aarch64.name)
+        if args.baremetal:
+            args.stdlib_deployment_targets.append(
+                StdlibDeploymentTarget.BareMetal.thumbv7m.name)
 
         # Infer platform flags from manually-specified configure targets.
         # This doesn't apply to Darwin platforms, as they are
@@ -512,6 +515,8 @@ class BuildScriptInvocation(object):
                           "--skip-test-libdispatch",
                           "--skip-test-libicu",
                           "--skip-test-playgroundsupport"]
+        if not args.test_baremetal:
+            impl_args += ["--skip-test-baremetal"]
         if not args.test_linux:
             impl_args += ["--skip-test-linux"]
         if not args.test_freebsd:
@@ -576,6 +581,10 @@ class BuildScriptInvocation(object):
             impl_args += [
                 "--android-deploy-device-path",
                 args.android_deploy_device_path,
+            ]
+        if args.baremetal and args.baremetal_toolchain:
+            impl_args += [
+                "--baremetal-toolchain", args.baremetal_toolchain,
             ]
 
         if platform.system() == 'Darwin':

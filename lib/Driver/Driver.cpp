@@ -264,6 +264,7 @@ Driver::buildToolChain(const llvm::opt::InputArgList &ArgList) {
       return llvm::make_unique<toolchains::Cygwin>(*this, target);
     return llvm::make_unique<toolchains::Windows>(*this, target);
   case llvm::Triple::Haiku:
+  case llvm::Triple::UnknownOS:
     return llvm::make_unique<toolchains::GenericUnix>(*this, target);
   case llvm::Triple::WASI:
     return llvm::make_unique<toolchains::GenericUnix>(*this, target);

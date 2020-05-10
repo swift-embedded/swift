@@ -26,6 +26,11 @@
 
 #include "swift/Runtime/Config.h"
 
+#if defined(_BAREMETAL)
+extern void _exit(int code);
+extern int _write (int fd, const char *buf, size_t count);
+#endif
+
 static void CrashCatcher(int Sig) {
   const char *Msg;
   switch (Sig) {
@@ -42,6 +47,8 @@ static void CrashCatcher(int Sig) {
   }
 #if defined(_WIN32)
   _write(_fileno(stderr), Msg, strlen(Msg));
+#elif defined(_BAREMETAL)
+  _write(0, Msg, strlen(Msg));
 #else
   write(STDERR_FILENO, Msg, strlen(Msg));
 #endif

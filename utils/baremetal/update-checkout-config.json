@@ -1,0 +1,75 @@
+{
+    "ssh-clone-pattern": "git@github.com:%s.git",
+    "https-clone-pattern": "https://github.com/%s.git",
+    "repos" : {
+       "swift": {
+            "remote": { "id": "apple/swift" } },
+       "cmark": {
+            "remote": { "id": "apple/swift-cmark" } },
+        "llbuild": {
+            "remote": { "id": "apple/swift-llbuild" } },
+        "swift-tools-support-core": {
+            "remote": { "id": "apple/swift-tools-support-core" } },
+        "swiftpm": {
+            "remote": { "id": "swift-embedded/swift-package-manager" } },
+        "swift-syntax": {
+            "remote": { "id": "apple/swift-syntax" } },
+        "swift-stress-tester": {
+            "remote": { "id": "apple/swift-stress-tester" } },
+        "swift-corelibs-xctest": {
+            "remote": { "id": "apple/swift-corelibs-xctest" } },
+        "swift-corelibs-foundation": {
+            "remote": { "id": "apple/swift-corelibs-foundation" } },
+        "swift-corelibs-libdispatch": {
+            "remote": { "id": "apple/swift-corelibs-libdispatch" } },
+        "swift-integration-tests": {
+            "remote": { "id": "apple/swift-integration-tests" } },
+        "swift-xcode-playground-support": {
+            "remote": { "id": "apple/swift-xcode-playground-support" } },
+        "ninja": {
+            "remote": { "id": "ninja-build/ninja" } },
+        "icu": {
+            "remote": { "id": "unicode-org/icu" },
+            "platforms": [ "Linux" ]
+        },
+        "cmake": {
+            "remote": { "id": "KitWare/CMake" },
+            "platforms": [ "Linux" ]
+        },
+       "indexstore-db": {
+            "remote": { "id": "apple/indexstore-db" } },
+        "sourcekit-lsp": {
+            "remote": { "id": "swift-embedded/sourcekit-lsp" } },
+        "swift-format": {
+            "remote": { "id": "apple/swift-format" } },
+        "llvm-project": {
+            "remote": { "id": "apple/llvm-project" } }
+    },
+    "default-branch-scheme": "master",
+    "branch-schemes": {
+       "embedded-5.2": {
+            "aliases": ["embedded-5.2"],
+            "repos": {
+                "llvm-project": "swift-5.2-RELEASE",
+                "swift": "swift-5.2-RELEASE",
+                "cmark": "swift-5.2-RELEASE",
+                "llbuild": "swift-5.2-RELEASE",
+                "swift-tools-support-core": "swift-5.2-branch",
+                "swiftpm": "embedded-5.2",
+                "swift-syntax": "swift-5.2-RELEASE",
+                "swift-stress-tester": "swift-5.2-RELEASE",
+                "swift-corelibs-xctest": "swift-5.2-RELEASE",
+                "swift-corelibs-foundation": "swift-5.2-RELEASE",
+                "swift-corelibs-libdispatch": "swift-5.2-RELEASE",
+                "swift-integration-tests": "swift-5.2-RELEASE",
+                "swift-xcode-playground-support": "swift-5.2-RELEASE",
+                "ninja": "release",
+                "icu": "release-65-1",
+                "cmake": "v3.15.1",
+                "indexstore-db": "swift-5.2-RELEASE",
+                "sourcekit-lsp": "embedded-5.2",
+                "swift-format": "master"
+            }
+        }
+    }
+}

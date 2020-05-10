@@ -43,6 +43,8 @@ typedef __swift_uint32_t __swift_mode_t;
 typedef __swift_uint16_t __swift_mode_t;
 #elif defined(_WIN32)
 typedef __swift_int32_t __swift_mode_t;
+#elif defined(_BAREMETAL)
+typedef __swift_uint32_t __swift_mode_t;
 #else  // just guessing
 typedef __swift_uint16_t __swift_mode_t;
 #endif
@@ -54,6 +56,14 @@ int _swift_stdlib_putchar_unlocked(int c);
 SWIFT_RUNTIME_STDLIB_INTERNAL
 __swift_size_t _swift_stdlib_fwrite_stdout(const void *ptr, __swift_size_t size,
                                            __swift_size_t nitems);
+#if defined(_BAREMETAL)
+SWIFT_RUNTIME_STDLIB_INTERNAL
+void* _swift_stdlib_stdin_get();
+SWIFT_RUNTIME_STDLIB_INTERNAL
+void* _swift_stdlib_stdout_get();
+SWIFT_RUNTIME_STDLIB_INTERNAL
+void* _swift_stdlib_stderr_get();
+#endif
 
 // General utilities <stdlib.h>
 // Memory management functions
@@ -105,7 +115,7 @@ static inline __swift_size_t _swift_stdlib_malloc_size(const void *ptr) {
   return malloc_size(ptr);
 }
 #elif defined(__linux__) || defined(__CYGWIN__) || defined(__ANDROID__) \
-   || defined(__HAIKU__) || defined(__FreeBSD__)
+   || defined(__HAIKU__) || defined(__FreeBSD__) || defined(_BAREMETAL)
 static inline __swift_size_t _swift_stdlib_malloc_size(const void *ptr) {
 #if defined(__ANDROID__)
 #if !defined(__ANDROID_API__) || __ANDROID_API__ >= 17

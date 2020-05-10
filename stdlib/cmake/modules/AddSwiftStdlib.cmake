@@ -29,7 +29,10 @@ function(add_swift_target_executable name)
         swiftCore)
   endif()
 
-  foreach(sdk ${SWIFT_SDKS})
+  set(SWIFTEXE_TARGET_SDKS "${SWIFT_SDKS}")
+  list(REMOVE_ITEM SWIFTEXE_TARGET_SDKS "BAREMETAL")
+
+  foreach(sdk ${SWIFTEXE_TARGET_SDKS})
     foreach(arch ${SWIFT_SDK_${sdk}_ARCHITECTURES})
       set(VARIANT_SUFFIX "-${SWIFT_SDK_${sdk}_LIB_SUBDIR}-${arch}")
       set(VARIANT_NAME "${name}${VARIANT_SUFFIX}")

@@ -115,6 +115,7 @@ KNOWN_SETTINGS=(
     skip-build-watchos-device   ""               "set to skip building Swift stdlibs for Apple watchOS devices (i.e. build simulators only)"
     skip-build-watchos-simulator ""              "set to skip building Swift stdlibs for Apple watchOS simulators (i.e. build devices only)"
     skip-build-android          ""               "set to skip building Swift stdlibs for Android"
+    skip-build-baremetal        ""               "set to skip building Swift stdlibs for BareMetal"
     skip-build-lldb             ""               "set to skip building LLDB"
     skip-build-llbuild          ""               "set to skip building llbuild"
     skip-build-libcxx           ""               "set to skip building libcxx"
@@ -139,6 +140,7 @@ KNOWN_SETTINGS=(
     skip-test-linux             ""               "set to skip testing Swift stdlibs for Linux"
     skip-test-freebsd           ""               "set to skip testing Swift stdlibs for FreeBSD"
     skip-test-cygwin            ""               "set to skip testing Swift stdlibs for Cygwin"
+    skip-test-baremetal         ""               "set to skip testing Swift stdlibs for BareMetal"
     skip-test-haiku             ""               "set to skip testing Swift stdlibs for Haiku"
     skip-test-osx               ""               "set to skip testing Swift stdlibs for OS X"
     skip-test-ios-32bit-simulator     ""         "set to skip testing Swift stdlibs for iOS 32bit simulators"
@@ -233,6 +235,7 @@ KNOWN_SETTINGS=(
     android-icu-data                   ""        "Path to libicudata.so"
     android-deploy-device-path         ""        "Path on an Android device to which built Swift stdlib products will be deployed"
     android-arch                       "armv7"   "The Android target architecture when building for Android"
+    baremetal-toolchain                ""        "Path to the toolchain that should be used for crosscompilation."
     check-args-only                    ""        "set to check all arguments are known. Exit with status 0 if success, non zero otherwise"
     common-cmake-options               ""        "CMake options used for all targets, including LLVM/Clang"
     cmark-cmake-options                ""        "CMake options used for all cmark targets"
@@ -426,6 +429,19 @@ function set_build_options_for_host() {
             SWIFT_HOST_VARIANT="haiku"
             SWIFT_HOST_VARIANT_SDK="HAIKU"
             SWIFT_HOST_VARIANT_ARCH="x86_64"
+            ;;
+        none-*)
+            [[ ${host} =~ none-(.*) ]]
+            local arch=${BASH_REMATCH[1]}
+            SWIFT_HOST_VARIANT="none"
+            SWIFT_HOST_VARIANT_SDK="BAREMETAL"
+            SWIFT_HOST_VARIANT_ARCH=$arch
+            SWIFT_HOST_TRIPLE="$arch-none-eabi"
+            if [[ $arch =~ thumb.* ]] ; then
+              llvm_target_arch="THUMB"
+            else
+              llvm_target_arch="ARM"
+            fi
             ;;
         linux-*)
             SWIFT_HOST_VARIANT="linux"
@@ -1028,7 +1044,7 @@ function make_relative_symlink() {
 CROSS_COMPILE_HOSTS=($CROSS_COMPILE_HOSTS)
 for t in "${CROSS_COMPILE_HOSTS[@]}"; do
     case ${t} in
-        iphone* | appletv* | watch* | linux-armv6 | linux-armv7 )
+        iphone* | appletv* | watch* | linux-armv6 | linux-armv7 | baremetal-* )
             ;;
         *)
             echo "Unknown host to cross-compile for: ${t}"
@@ -1378,6 +1394,10 @@ function common_cross_c_flags() {
             ;;
         watchos-armv7k)
             echo -n " -arch armv7k -mwatchos-version-min=${DARWIN_DEPLOYMENT_VERSION_WATCHOS}"
+            ;;
+        baremetal-*)
+            [[ $1 =~ baremetal-(.*) ]]
+            echo -n " -arch ${BASH_REMATCH[1]}"
             ;;
         android-armv7)
             echo -n " -arch armv7"
@@ -1781,6 +1801,21 @@ for host in "${ALL_HOSTS[@]}"; do
                         -DSWIFT_ANDROID_${ANDROID_ARCH}_ICU_DATA:STRING="${ANDROID_ICU_DATA}"
                         -DSWIFT_ANDROID_DEPLOY_DEVICE_PATH:STRING="${ANDROID_DEPLOY_DEVICE_PATH}"
                         -DSWIFT_SDK_ANDROID_ARCHITECTURES:STRING="${ANDROID_ARCH}"
+                    )
+                fi
+
+                if [[ ! "${SKIP_BUILD_BAREMETAL}" ]]; then
+                    if [[ -z "$BAREMETAL_TOOLCHAIN" ]] && which arm-none-eabi-gcc ; then
+                      BAREMETAL_TOOLCHAIN="$(dirname "$(arm-none-eabi-gcc --print-sysroot)")"
+                      echo "BAREMETAL_TOOLCHAIN: $BAREMETAL_TOOLCHAIN"
+                    else
+                      echo "arm-none-eabi-gcc not found. Please use --baremetal-toolchain"
+                      exit 1
+                    fi
+
+                    cmake_options=(
+                        "${cmake_options[@]}"
+                        -DSWIFT_BAREMETAL_TOOLCHAIN_PATH:STRING="${BAREMETAL_TOOLCHAIN}"
                     )
                 fi
 

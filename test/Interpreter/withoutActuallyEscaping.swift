@@ -34,7 +34,9 @@ WithoutEscapingSuite.test("ExpectNoCrash") {
   dontEscape(f: { print("foo") })
 }
 
-WithoutEscapingSuite.test("ExpectDebugCrash") {
+WithoutEscapingSuite.test("ExpectDebugCrash")
+  .skip(.baremetalAny(reason: "Crash testing not supported"))
+  .code {
   // Optimize versions pass a nil closure context.
   if _isDebugAssertConfiguration() {
     expectCrashLater()
@@ -47,13 +49,17 @@ struct Context {
   var b = 1
 }
 
-WithoutEscapingSuite.test("ExpectCrash") {
+WithoutEscapingSuite.test("ExpectCrash")
+  .skip(.baremetalAny(reason: "Crash testing not supported"))
+  .code {
   expectCrashLater()
   let context = Context()
   sink = letEscape(f: { print("Context: \(context.a) \(context.b)") })
 }
 
-WithoutEscapingSuite.test("ExpectThrowingCrash") {
+WithoutEscapingSuite.test("ExpectThrowingCrash") 
+  .skip(.baremetalAny(reason: "Crash testing not supported"))
+  .code {
   expectCrashLater()
   let context = Context()
   var testDidThrow = false

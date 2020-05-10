@@ -142,6 +142,10 @@ public func snprintf(ptr: UnsafeMutablePointer<Int8>, _ len: Int, _ format: Unsa
     return vsnprintf(ptr, len, format, va_args)
   }
 }
+#elseif os(none)
+public var stdin: UnsafeMutablePointer<FILE>? { _swift_stdlib_stdin_get().bindMemory(to: FILE.self, capacity: 1) }
+public var stdout: UnsafeMutablePointer<FILE>? { return _swift_stdlib_stdout_get().bindMemory(to: FILE.self, capacity: 1) }
+public var stderr: UnsafeMutablePointer<FILE>? { return _swift_stdlib_stderr_get().bindMemory(to: FILE.self, capacity: 1) }
 #elseif os(Windows)
 public var stdin: UnsafeMutablePointer<FILE> { return __acrt_iob_func(0) }
 public var stdout: UnsafeMutablePointer<FILE> { return __acrt_iob_func(1) }
@@ -366,6 +370,8 @@ public var SIG_IGN: _crt_signal_t {
 public var SIG_ERR: _crt_signal_t {
   return unsafeBitCast(-1, to: _crt_signal_t.self)
 }
+#elseif os(none)
+// signals not available
 #else
 internal var _ignore = _UnsupportedPlatformError()
 #endif
@@ -383,6 +389,8 @@ public var SEM_FAILED: UnsafeMutablePointer<sem_t>? {
 #elseif os(Linux) || os(FreeBSD) || os(PS4) || os(Android) || os(Cygwin) || os(Haiku)
   // The value is ABI.  Value verified to be correct on Glibc.
   return UnsafeMutablePointer<sem_t>(bitPattern: 0)
+#elseif os(none)
+  return nil
 #else
   _UnsupportedPlatformError()
 #endif
