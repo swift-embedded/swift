@@ -341,6 +341,11 @@ def data_sections: Flag<["-"], "data-sections">,
   Flags<[FrontendOption, NoInteractiveOption, DoesNotAffectIncrementalBuild]>,
   HelpText<"Emit data to separate sections.">;
 
+def metadata_sections: Flag<["-"], "metadata-sections">,
+  Flags<[FrontendOption, NoInteractiveOption, DoesNotAffectIncrementalBuild]>,
+  HelpText<"Emit type metadata to separate sections.">;
+
+
 def stack_promotion_checks : Flag<["-"], "emit-stack-promotion-checks">,
   HelpText<"Emit runtime checks for correct stack promotion of objects.">;
 

@@ -152,6 +152,9 @@ public:
   /// Emit data to separate sections.
   unsigned DataSections : 1;
 
+  /// Emit runtime metadata to separate sections.
+  unsigned MetadataSections : 1;
+
   /// The maximum number of bytes used on a stack frame for stack promotion
   /// (includes alloc_stack allocations).
   unsigned StackPromotionSizeLimit = 1024;
@@ -255,7 +258,7 @@ public:
         IntegratedREPL(false), DisableLLVMOptzns(false),
         DisableSwiftSpecificLLVMOptzns(false), DisableLLVMSLPVectorizer(false),
         DisableFPElim(true), Playground(false), EmitStackPromotionChecks(false),
-        FunctionSections(false), DataSections(false),
+        FunctionSections(false), DataSections(false), MetadataSections(false),
         PrintInlineTree(false), EmbedMode(IRGenEmbedMode::None),
         HasValueNamesSetting(false), ValueNames(false),
         EnableReflectionMetadata(true), EnableReflectionNames(true),

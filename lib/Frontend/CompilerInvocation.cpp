@@ -1126,6 +1126,7 @@ static bool ParseIRGenArgs(IRGenOptions &Opts, ArgList &Args,
     Opts.StackPromotionSizeLimit = limit;
   }
 
+  Opts.MetadataSections = Args.hasArg(OPT_metadata_sections);
   Opts.FunctionSections = Args.hasArg(OPT_function_sections);
   Opts.DataSections = Args.hasArg(OPT_data_sections);
 
