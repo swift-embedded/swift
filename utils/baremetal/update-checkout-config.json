@@ -57,7 +57,7 @@
                 "compiler-rt": "swift-5.1-branch",
                 "swift": "embedded-5.1",
                 "lldb": "swift-5.1-branch",
-                "cmark": "master",
+                "cmark": "main",
                 "llbuild": "swift-5.1-branch",
                 "swiftpm": "embedded-5.1",
                 "swift-syntax": "swift-5.1-branch",
